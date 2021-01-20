@@ -25,7 +25,6 @@ public class BoardService {
 		// locationName 이 실제로 동네가 있는지 체크 후 있으면 등록 없으면 등록 안함
 
 		Board boardInfo = boardSaveDto.toEntity(userId, locationName, locationId, latitude, longitude);
-		System.out.println("boardInfo = " + boardInfo);
 		// 유저의 동네와 저장하려는 동네가 일치하면 저장, 그렇지 않으면 저장 X
 		if (locationName.equals(boardInfo.getLocationName())) {
 			int saveCount = boardMapper.save(boardInfo);
