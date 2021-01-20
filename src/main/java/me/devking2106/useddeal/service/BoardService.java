@@ -29,7 +29,6 @@ public class BoardService {
 		// 유저의 동네와 저장하려는 동네가 일치하면 저장, 그렇지 않으면 저장 X
 		if (locationName.equals(boardInfo.getLocationName())) {
 			int saveCount = boardMapper.save(boardInfo);
-			System.out.println("saveCount = " + saveCount);
 			if (saveCount != 1) {
 				throw new Exception("게시글 저장에 실패 했습니다");
 			}
