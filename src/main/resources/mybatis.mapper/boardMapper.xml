@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.devking2106.useddeal.repository.mapper.BoardMapper">
+
+    <insert id="save" parameterType="me.devking2106.useddeal.entity.Board" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO BOARD SET USER_ID = #{userId},
+                              LOCATION_NAME = #{locationName},
+                              LOCATION_ID = #{locationId},
+                              TITLE = #{title},
+                              CONTENT = #{content},
+                              PRICE = #{price},
+                              CATEGORY_ID = #{categoryId},
+                              STATUS = #{status},
+                              REG_DATE = #{regDate},
+                              MOD_DATE = #{modDate},
+                              BOARD_DATE = #{boardDate},
+                              PRICE_SUGGEST_YN = #{priceSuggestYN},
+                              PULL_YN = #{pullYN},
+                              LATITUDE = #{latitude},
+                              LONGITUDE = #{longitude}
+
+    </insert>
+
+</mapper>
