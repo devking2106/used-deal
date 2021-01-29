@@ -35,8 +35,8 @@ public class Board {
 	private final LocalDateTime regDate;
 	private final LocalDateTime modDate;
 	private final LocalDateTime boardDate;
-	private final boolean priceSuggestYN;
-	private final boolean pullYN;
+	private final boolean isPriceSuggestYN;
+	private final boolean isPullYN;
 	private final Double latitude;
 	private final Double longitude;
 
