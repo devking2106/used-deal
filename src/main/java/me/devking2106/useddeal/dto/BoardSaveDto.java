@@ -1,12 +1,9 @@
 package me.devking2106.useddeal.dto;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
-import java.util.Optional;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
@@ -14,9 +11,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import me.devking2106.useddeal.common.utils.type.CommonStatus;
 import me.devking2106.useddeal.entity.Board;
-import me.devking2106.useddeal.entity.User;
 
 @Builder
 @Getter
@@ -38,7 +33,7 @@ public class BoardSaveDto {
 	@Min(0)
 	private Long categoryId;
 
-	private CommonStatus priceSuggestYN;
+	private boolean priceSuggestYN;
 
 	@NotBlank
 	private String locationName;
@@ -46,7 +41,6 @@ public class BoardSaveDto {
 
 
 	public Board toEntity(Long userId, String locationName, Long locationId, Double latitude, Double longitude) {
-		priceSuggestYN = Objects.requireNonNullElse(priceSuggestYN, CommonStatus.N);
 		LocalDateTime saveTime = LocalDateTime.now();
 		return Board.builder()
 			.userId(userId)
@@ -61,11 +55,9 @@ public class BoardSaveDto {
 			.modDate(saveTime)
 			.boardDate(saveTime)
 			.priceSuggestYN(priceSuggestYN)
-			.pullYN(CommonStatus.N)
-			.viewCount(0L)
+			.pullYN(false)
 			.latitude(latitude)
 			.longitude(longitude)
-			.locationName(locationName)
 			.build();
 	}
 

@@ -12,7 +12,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import me.devking2106.useddeal.common.utils.type.CommonStatus;
 import me.devking2106.useddeal.entity.Board;
 import me.devking2106.useddeal.repository.mapper.BoardMapper;
 
@@ -22,6 +21,7 @@ class BoardServiceTest {
 	private BoardMapper boardMapper;
 
 	private Board board;
+	private Board failedBoard;
 
 	@BeforeEach
 	void initBoard() {
@@ -35,20 +35,21 @@ class BoardServiceTest {
 			.content("내용 청운동")
 			.price(1_000_000L)
 			.categoryId(1L)
-			.status(Board.Status.SALE)
+			.status(Board.Status.SALE.getStatus())
 			.regDate(saveTime)
 			.modDate(saveTime)
 			.boardDate(saveTime)
-			.priceSuggestYN(CommonStatus.N)
-			.pullYN(CommonStatus.Y)
-			.viewCount(0L)
+			.priceSuggestYN(false)
+			.pullYN(false)
 			.latitude(37.587111)
 			.longitude(126.969069)
 			.build();
+
+		failedBoard = Board.builder().build();
 	}
 
 	@Test
-	@DisplayName("게시글 생성 테스트")
+	@DisplayName("게시글 생성 테스트 - 성공")
 	void saveBoard() {
 		//when
 		when(boardMapper.save(board)).thenReturn(1);
@@ -56,5 +57,15 @@ class BoardServiceTest {
 		//then
 		assertEquals(saveCount, 1);
 	}
+
+	@Test
+	@DisplayName("게시글 생성 테스트 - 실패")
+	void saveFailedBoard() {
+		//when
+		when(boardMapper.save(failedBoard)).thenThrow(new RuntimeException("save failed"));
+		//then
+		assertThrows(RuntimeException.class, () -> boardMapper.save(failedBoard));
+	}
+
 
 }

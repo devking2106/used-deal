@@ -4,8 +4,22 @@
 <mapper namespace="me.devking2106.useddeal.repository.mapper.BoardMapper">
 
     <insert id="save" parameterType="me.devking2106.useddeal.entity.Board" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO BOARD (USER_ID,LOCATION_NAME, LOCATION_ID,TITLE, CONTENT, PRICE, CATEGORY_ID, STATUS, REG_DATE, MOD_DATE, BOARD_DATE, PRICE_SUGGEST_YN, PULL_YN, VIEW_COUNT, LATITUDE, LONGITUDE)
-        VALUES (#{userId},#{locationName}, #{locationId},#{title},#{content},#{price},#{categoryId},#{status},#{regDate},#{modDate}, #{boardDate}, #{priceSuggestYN}, #{pullYN}, #{viewCount}, #{latitude},#{longitude})
+        INSERT INTO BOARD SET USER_ID = #{userId},
+                              LOCATION_NAME = #{locationName},
+                              LOCATION_ID = #{locationId},
+                              TITLE = #{title},
+                              CONTENT = #{content},
+                              PRICE = #{price},
+                              CATEGORY_ID = #{categoryId},
+                              STATUS = #{status},
+                              REG_DATE = #{regDate},
+                              MOD_DATE = #{modDate},
+                              BOARD_DATE = #{boardDate},
+                              PRICE_SUGGEST_YN = #{priceSuggestYN},
+                              PULL_YN = #{pullYN},
+                              LATITUDE = #{latitude},
+                              LONGITUDE = #{longitude}
+
     </insert>
 
 </mapper>
