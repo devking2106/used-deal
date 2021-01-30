@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import me.devking2106.useddeal.common.utils.type.CommonStatus;
 
 
 @Getter
@@ -31,12 +30,12 @@ public class Board {
 	private final String content;
 	private final Long price;
 	private final Long categoryId;
-	private final Board.Status status;
+	private final String status;
 	private final LocalDateTime regDate;
 	private final LocalDateTime modDate;
 	private final LocalDateTime boardDate;
-	private final boolean isPriceSuggestYN;
-	private final boolean isPullYN;
+	private final boolean isPriceSuggest;
+	private final boolean isPull;
 	private final Double latitude;
 	private final Double longitude;
 
