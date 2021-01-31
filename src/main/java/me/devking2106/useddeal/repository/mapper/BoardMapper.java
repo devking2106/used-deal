@@ -9,7 +9,6 @@ import org.apache.ibatis.annotations.Param;
 import me.devking2106.useddeal.dto.BoardDetailDto;
 import me.devking2106.useddeal.dto.BoardFindDto;
 import me.devking2106.useddeal.entity.Board;
-import me.devking2106.useddeal.entity.Location;
 
 @Mapper
 public interface BoardMapper {
