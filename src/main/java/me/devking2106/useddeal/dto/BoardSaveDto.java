@@ -51,7 +51,7 @@ public class BoardSaveDto {
 			.content(content)
 			.price(price)
 			.categoryId(categoryId)
-			.status(Board.Status.SALE.getStatus())
+			.status(Board.Status.SALE)
 			.regDate(saveTime)
 			.modDate(saveTime)
 			.boardDate(saveTime)

@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import me.devking2106.useddeal.entity.Board;
 
 @Getter
 @Builder
@@ -23,7 +24,7 @@ public class BoardDetailDto {
 	private String locationName;
 	private Long price;
 	private Long categoryId;
-	private String status;
+	private Board.Status status;
 	private LocalDateTime boardDate;
 	private boolean isPriceSuggest;
 	private boolean isPull;

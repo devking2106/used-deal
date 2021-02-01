@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import me.devking2106.useddeal.error.exception.common.StatusException;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Result {
@@ -54,12 +53,12 @@ public final class Result {
 		return ResponseEntity.badRequest().body(validationResult);
 	}
 
-	public static ResponseEntity<ApiResult> failure(StatusException ex) {
-		ApiResult apiResult =  new ApiResult();
-		apiResult.add("message", ex.getMessage());
-		apiResult.add("status", ex.getStatus());
-		return ResponseEntity.badRequest().body(apiResult);
-	}
+	// public static ResponseEntity<ApiResult> failure(StatusException ex) {
+	// 	ApiResult apiResult =  new ApiResult();
+	// 	apiResult.add("message", ex.getMessage());
+	// 	apiResult.add("status", ex.getStatus());
+	// 	return ResponseEntity.badRequest().body(apiResult);
+	// }
 
 	public static ResponseEntity<ApiResult> serverError(String message, String errorReferenceCode) {
 		return ResponseEntity.status(500).body(ApiResult.error(message, errorReferenceCode));

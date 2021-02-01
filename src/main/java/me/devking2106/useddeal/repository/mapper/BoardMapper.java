@@ -15,7 +15,7 @@ public interface BoardMapper {
 
 	int save(Board saveBoard);
 
-	List<Board> findByAll();
+	List<Board> findAll();
 
 	List<BoardFindDto> findByLocation(@Param("locationName") String locationName, @Param("latitude") Double latitude,
 		@Param("longitude") Double longitude, @Param("range") int range);
@@ -27,4 +27,6 @@ public interface BoardMapper {
 	List<Board> findByContentLike(String content);
 
 	List<Board> findByTitleAndContentLike(@Param("title") String title, @Param("content") String content);
+
+	List<BoardFindDto> findByUser(Long userId);
 }

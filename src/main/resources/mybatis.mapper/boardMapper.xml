@@ -37,7 +37,7 @@
             LONGITUDE = #{longitude}
     </insert>
 
-    <select id="findByAll" resultType="me.devking2106.useddeal.entity.Board">
+    <select id="findAll" resultType="me.devking2106.useddeal.entity.Board">
         SELECT *
         FROM BOARD
     </select>
@@ -102,6 +102,20 @@
              USER
         WHERE BOARD.USER_ID = USER.ID
           AND BOARD.ID = #{id}
+    </select>
+
+    <select id="findByUser" resultType="me.devking2106.useddeal.dto.BoardFindDto">
+        SELECT ID,
+        TITLE,
+        LOCATION_NAME,
+        PRICE,
+        CATEGORY_ID,
+        STATUS,
+        BOARD_DATE,
+        IS_PULL
+        FROM BOARD
+        WHERE USER_ID = #{userId}
+        ORDER BY BOARD_DATE
     </select>
 
 </mapper>

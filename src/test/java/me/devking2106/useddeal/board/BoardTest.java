@@ -46,7 +46,7 @@ class BoardTest {
 			.content("content Test User1")
 			.price(1_000_000L)
 			.categoryId(1L)
-			.status(Board.Status.SALE.getStatus())
+			.status(Board.Status.SALE)
 			.regDate(saveTime)
 			.modDate(saveTime)
 			.boardDate(saveTime)

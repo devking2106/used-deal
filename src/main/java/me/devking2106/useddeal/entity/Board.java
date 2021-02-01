@@ -30,7 +30,7 @@ public class Board {
 	private final String content;
 	private final Long price;
 	private final Long categoryId;
-	private final String status;
+	private final Board.Status status;
 	private final LocalDateTime regDate;
 	private final LocalDateTime modDate;
 	private final LocalDateTime boardDate;

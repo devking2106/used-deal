@@ -35,7 +35,7 @@ class BoardServiceTest {
 			.content("내용 청운동")
 			.price(1_000_000L)
 			.categoryId(1L)
-			.status(Board.Status.SALE.getStatus())
+			.status(Board.Status.SALE)
 			.regDate(saveTime)
 			.modDate(saveTime)
 			.boardDate(saveTime)

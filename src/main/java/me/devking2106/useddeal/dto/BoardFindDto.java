@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
+import me.devking2106.useddeal.entity.Board;
 
 @Getter
 @Builder
@@ -15,7 +16,7 @@ public class BoardFindDto {
 	private final String locationName;
 	private final Long price;
 	private final Long categoryId;
-	private final String status;
+	private final Board.Status status;
 	private final LocalDateTime boardDate;
 	private final boolean isPull;
 }
