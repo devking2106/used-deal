@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import me.devking2106.useddeal.controller.request.BoardRequest;
+import me.devking2106.useddeal.controller.request.BoardFindRequest;
 import me.devking2106.useddeal.dto.BoardDetailDto;
 import me.devking2106.useddeal.dto.BoardFindDto;
 import me.devking2106.useddeal.entity.Board;
@@ -20,6 +20,6 @@ public interface BoardMapper {
 
 	List<BoardFindDto> findByUser(@Param("userId") Long userId, @Param("userIdResult") Long userIdResult);
 
-	List<BoardFindDto> findAll(@Param("boardFindRequest") BoardRequest.Find boardFindRequest,
+	List<BoardFindDto> findAll(@Param("boardFindRequest") BoardFindRequest boardFindRequest,
 		@Param("latitude") double latitude, @Param("longitude") double longitude);
 }

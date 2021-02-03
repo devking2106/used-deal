@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import me.devking2106.useddeal.controller.request.BoardRequest;
+import me.devking2106.useddeal.controller.request.BoardFindRequest;
 import me.devking2106.useddeal.dto.BoardDetailDto;
 import me.devking2106.useddeal.dto.BoardFindDto;
 import me.devking2106.useddeal.dto.BoardSaveDto;
@@ -51,7 +51,7 @@ public class BoardController {
 	}
 
 	@GetMapping("/boards")
-	public ResponseEntity<List<BoardFindDto>> findAll(@Valid BoardRequest.Find boardFindRequest) {
+	public ResponseEntity<List<BoardFindDto>> findAll(@Valid BoardFindRequest boardFindRequest) {
 		List<BoardFindDto> boards = boardService.findAll(boardFindRequest);
 		return getBoardFindDtoListResponseEntity(boards);
 	}

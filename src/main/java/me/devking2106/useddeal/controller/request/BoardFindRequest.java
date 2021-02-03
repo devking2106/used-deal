@@ -12,27 +12,22 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import me.devking2106.useddeal.entity.Board;
+@Getter
+@Setter
+@Builder
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
+public class BoardFindRequest {
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class BoardRequest {
+	private Board.FilterType filterType;
 
-	@Getter
-	@Setter
-	@Builder
-	@ToString
-	@AllArgsConstructor
-	@NoArgsConstructor
-	public static class Find {
+	private String query;
 
-		private Board.FilterType filterType;
+	@NotNull
+	private String location;
 
-		private String query;
-
-		@NotNull
-		private String location;
-
-		@Range(min = 0, max = 15)
-		private int range;
-	}
+	@Range(min = 0, max = 15)
+	private int range;
 
 }
