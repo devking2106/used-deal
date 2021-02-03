@@ -38,7 +38,7 @@ public class BoardSaveDto {
 	@NotBlank
 	private String locationName;
 
-	public Board toEntity(Long userId, String locationName, Long locationId, Double latitude, Double longitude) {
+	public Board toEntity(Long userId, String locationName, Long locationId, double latitude, double longitude) {
 		LocalDateTime saveTime = LocalDateTime.now();
 		return Board.builder()
 			.userId(userId)
