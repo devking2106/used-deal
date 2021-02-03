@@ -26,11 +26,10 @@ public class BoardDetailDto {
 	private Long categoryId;
 	private Board.Status status;
 	private LocalDateTime boardDate;
-	private boolean isPriceSuggest;
 	private boolean isPull;
 
-	public BoardDetailDto toEntity(Long userId, String locationName, Long locationId, Double latitude,
-		Double longitude) {
+	public BoardDetailDto toEntity(Long userId, String locationName, Long locationId, double latitude,
+		double longitude) {
 		return BoardDetailDto.builder()
 			.id(id)
 			.userId(userId)
@@ -42,7 +41,6 @@ public class BoardDetailDto {
 			.categoryId(categoryId)
 			.status(status)
 			.boardDate(boardDate)
-			.isPriceSuggest(isPriceSuggest)
 			.isPull(isPull)
 			.build();
 	}

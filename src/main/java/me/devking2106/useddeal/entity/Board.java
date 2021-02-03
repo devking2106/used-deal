@@ -22,6 +22,11 @@ public class Board {
 
 	}
 
+	public enum FilterType {
+		TITLE, CONTENT, TITLE_OR_CONTENT
+	}
+
+
 	private final Long id;
 	private final Long userId;
 	private final Long locationId;
@@ -34,7 +39,6 @@ public class Board {
 	private final LocalDateTime regDate;
 	private final LocalDateTime modDate;
 	private final LocalDateTime boardDate;
-	private final boolean isPriceSuggest;
 	private final boolean isPull;
 	private final Double latitude;
 	private final Double longitude;

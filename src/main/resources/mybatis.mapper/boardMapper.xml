@@ -14,7 +14,6 @@
         <result property="categoryId" column="category_id"/>
         <result property="status" column="status"/>
         <result property="boardDate" column="board_date"/>
-        <result property="isPriceSuggest" column="IS_PRICE_SUGGEST"/>
         <result property="isPull" column="IS_PULL"/>
     </resultMap>
 
@@ -31,59 +30,10 @@
             REG_DATE = #{regDate},
             MOD_DATE = #{modDate},
             BOARD_DATE = #{boardDate},
-            IS_PRICE_SUGGEST = #{isPriceSuggest},
             IS_PULL = #{isPull},
             LATITUDE = #{latitude},
             LONGITUDE = #{longitude}
     </insert>
-
-    <select id="findAll" resultType="me.devking2106.useddeal.entity.Board">
-        SELECT *
-        FROM BOARD
-    </select>
-
-    <select id="findByLocation" resultType="me.devking2106.useddeal.dto.BoardFindDto">
-        SELECT ID,
-        TITLE,
-        LOCATION_NAME,
-        PRICE,
-        CATEGORY_ID,
-        STATUS,
-        BOARD_DATE,
-        IS_PULL
-        <if test="range == 0">
-            FROM BOARD
-            WHERE LOCATION_NAME = #{locationName}
-        </if>
-        <if test="range != 0">
-            FROM (SELECT *,
-            (6371*acos(cos(radians(#{latitude}))*cos(radians(LATITUDE))*cos(radians(LONGITUDE)-radians(#{longitude}))+sin(radians(#{latitude}))*sin(radians(LATITUDE))))
-            AS distance
-            FROM BOARD) BOARD
-            WHERE DISTANCE <![CDATA[<=]]> #{range}
-        </if>
-        AND STATUS != 'HIDE'
-        ORDER BY BOARD_DATE
-    </select>
-
-    <select id="findByTitleLike" resultType="me.devking2106.useddeal.entity.Board">
-        SELECT *
-        FROM BOARD
-        WHERE TITLE LIKE '%${title}%'
-    </select>
-
-    <select id="findByContentLike" resultType="me.devking2106.useddeal.entity.Board">
-        SELECT *
-        FROM BOARD
-        WHERE CONTENT LIKE '%${content}%'
-    </select>
-
-    <select id="findByTitleAndContentLike" resultType="me.devking2106.useddeal.entity.Board">
-        SELECT *
-        FROM BOARD
-        WHERE TITLE LIKE '%${title}%'
-          AND CONTENT LIKE '%${content}%'
-    </select>
 
     <select id="findById" resultMap="BoardDetailDto">
         SELECT BOARD.ID,
@@ -96,7 +46,6 @@
                BOARD.CATEGORY_ID,
                BOARD.STATUS,
                BOARD.BOARD_DATE,
-               BOARD.IS_PRICE_SUGGEST,
                BOARD.IS_PULL
         FROM BOARD,
              USER
@@ -115,6 +64,38 @@
         IS_PULL
         FROM BOARD
         WHERE USER_ID = #{userId}
+        <if test="userId != userIdResult">
+            AND STATUS != 'HIDE'
+        </if>
+        ORDER BY BOARD_DATE
+    </select>
+    <select id="findAll" resultType="me.devking2106.useddeal.dto.BoardFindDto">
+        SELECT ID,
+        TITLE,
+        LOCATION_NAME,
+        PRICE,
+        CATEGORY_ID,
+        STATUS,
+        BOARD_DATE,
+        IS_PULL
+        <if test="boardFindRequest.range == 0">
+            FROM BOARD
+            WHERE LOCATION_NAME = #{boardFindRequest.location}
+        </if>
+        <if test="boardFindRequest.range != 0">
+            FROM (SELECT *,
+            (6371*acos(cos(radians(#{latitude}))*cos(radians(LATITUDE))*cos(radians(LONGITUDE)-radians(#{longitude}))+sin(radians(#{latitude}))*sin(radians(LATITUDE))))
+            AS distance
+            FROM BOARD) BOARD
+            WHERE DISTANCE <![CDATA[<=]]> #{boardFindRequest.range}
+        </if>
+        AND STATUS != 'HIDE'
+        <if test=' "TITLE".equalsIgnoreCase(boardFindRequest.filterType)'>
+            AND TITLE LIKE '%${boardFindRequest.query}%'
+        </if>
+        <if test=' "CONTENT".equalsIgnoreCase(boardFindRequest.filterType)'>
+            AND CONTENT LIKE '%${boardFindRequest.query}%'
+        </if>
         ORDER BY BOARD_DATE
     </select>
 

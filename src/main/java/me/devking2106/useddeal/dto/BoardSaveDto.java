@@ -35,9 +35,6 @@ public class BoardSaveDto {
 	@Min(0)
 	private Long categoryId;
 
-	@JsonProperty(value = "priceSuggest")
-	private boolean isPriceSuggest;
-
 	@NotBlank
 	private String locationName;
 
@@ -55,7 +52,6 @@ public class BoardSaveDto {
 			.regDate(saveTime)
 			.modDate(saveTime)
 			.boardDate(saveTime)
-			.isPriceSuggest(isPriceSuggest)
 			.isPull(false)
 			.latitude(latitude)
 			.longitude(longitude)

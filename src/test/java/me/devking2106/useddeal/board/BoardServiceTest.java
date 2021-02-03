@@ -39,7 +39,6 @@ class BoardServiceTest {
 			.regDate(saveTime)
 			.modDate(saveTime)
 			.boardDate(saveTime)
-			.isPriceSuggest(false)
 			.isPull(false)
 			.latitude(37.587111)
 			.longitude(126.969069)

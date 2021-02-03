@@ -7,14 +7,16 @@ import org.springframework.validation.FieldError;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Value;
+import lombok.Getter;
+import lombok.ToString;
 
-@Value
+@Getter
+@ToString
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class FieldErrorDetail {
+public final class FieldErrorDetail {
 
-	String field;
-	String message;
+	private final String field;
+	private final String message;
 	public static FieldErrorDetail create(FieldError fieldError, MessageSource messageSource, Locale locale) {
 		return new FieldErrorDetail(
 			fieldError.getField(),

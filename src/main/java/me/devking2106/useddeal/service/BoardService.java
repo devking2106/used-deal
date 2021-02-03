@@ -1,17 +1,14 @@
 package me.devking2106.useddeal.service;
 
-import java.util.Collection;
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import me.devking2106.useddeal.controller.request.BoardRequest;
 import me.devking2106.useddeal.dto.BoardDetailDto;
 import me.devking2106.useddeal.dto.BoardFindDto;
 import me.devking2106.useddeal.dto.BoardSaveDto;
@@ -51,82 +48,46 @@ public class BoardService {
 
 	public static void boardIsEmpty(Object boards) {
 		if (ObjectUtils.isEmpty(boards)) {
-			throw new RuntimeException("게시글 검색 결과가 없습니다");
+			throw new RuntimeException("게시글이 존재하지 않습니다.");
 		}
 	}
 
+	@Transactional(readOnly = true)
+	public BoardDetailDto findById(Long boardId) {
+		// 내 userId 를 가져온다
+		long userId = 1;
+		BoardDetailDto boardInfo = boardMapper.findById(boardId);
+		boardIsEmpty(boardInfo);
+
+		// 글이 숨김이고 내가 작성한 글이 아닐 경우 보지 못한다
+		if (boardInfo.getUserId() != userId && boardInfo.getStatus().equals(Board.Status.HIDE)) {
+			throw new RuntimeException("숨긴 글은 볼 수 없습니다");
+		}
+
+		return boardInfo;
+	}
 
 	@Transactional(readOnly = true)
-	public List<Board> findAll() {
-		List<Board> boards = boardMapper.findAll();
+	public List<BoardFindDto> findByUser(Long userId) {
+		// userId 를 조회 후 있으면 조회하고 없으면 예외를 던져준다
+
+		// 내 userId를 가져온다
+		long userIdResult = 1;
+
+		// 내 정보면 숨김을 표시해주고 내 정보가 아니면 숨김 게시글을 제외한다
+		List<BoardFindDto> boards = boardMapper.findByUser(userId, userIdResult);
 		return boards;
 	}
 
 	@Transactional(readOnly = true)
-	public List<BoardFindDto> findByLocationName(String location, int range) {
-		// 임시 range 범위 0~15 처리 추후 Location.Range 로 처리
-		if (0 > range || range > 15) {
-			throw new RuntimeException("게시글 지역 검색 범위가 벗어났습니다. 0~15 사이의 값을 입력해주세요");
-		}
+	public List<BoardFindDto> findAll(BoardRequest.Find boardFindRequest) {
+		// 임시 boardFindRequest.range 범위 0~15 처리 추후 Location.Range 로 처리
 		// location 지역이 있는지 확인 후 없는 지역이면 예외 처리
 
 		// location = 서울 종로구 청운동, 위경도 값
 		double latitude = 37.587111;
 		double longitude = 126.969069;
-		List<BoardFindDto> boards = boardMapper.findByLocation(location, latitude, longitude, range);
-		return boards;
-	}
-
-	@Transactional(readOnly = true)
-	public BoardDetailDto findById(Long boardId) {
-		if (boardId < 1) {
-			throw new RuntimeException("게시글 번호는 0보다 커야합니다");
-		}
-		BoardDetailDto boardInfo = boardMapper.findById(boardId);
-		return boardInfo;
-	}
-
-	@Transactional(readOnly = true)
-	public List<Board> findByTitleLike(String title) {
-		List<Board> boards = boardMapper.findByTitleLike(title);
-		return boards;
-	}
-
-	@Transactional(readOnly = true)
-	public List<Board> findByContentLike(String content) {
-		List<Board> boards = boardMapper.findByContentLike(content);
-		return boards;
-	}
-
-	@Transactional(readOnly = true)
-	public List<Board> findByTitleAndContentLike(String title, String content) {
-		List<Board> boards = boardMapper.findByTitleAndContentLike(title, content);
-		return boards;
-	}
-
-	@Transactional(readOnly = true)
-	public List<Board> findAll(String title, String content) {
-		List<Board> boards;
-		if ((title == null || title.isBlank()) && (content == null || content.isBlank())) {
-			boards = findAll();
-		} else if ((title != null) && (content == null || content.isBlank())) {
-			boards = findByTitleLike(title.trim());
-		} else if (title == null || title.isBlank()) {
-			boards = findByContentLike(content.trim());
-		} else {
-			boards = findByTitleAndContentLike(title.trim(), content.trim());
-		}
-		return boards;
-	}
-
-	@Transactional(readOnly = true)
-	public List<BoardFindDto> findByUser(Long userId) {
-		if (userId < 1) {
-			throw new RuntimeException("유저 번호는 0보다 커야합니다");
-		}
-		// userId 를 조회 후 있으면 조회하고 없으면 예외를 던져준다
-
-		List<BoardFindDto> boards = boardMapper.findByUser(userId);
+		List<BoardFindDto> boards = boardMapper.findAll(boardFindRequest, latitude, longitude);
 		return boards;
 	}
 }

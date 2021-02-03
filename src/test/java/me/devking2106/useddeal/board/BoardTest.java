@@ -1,5 +1,6 @@
 package me.devking2106.useddeal.board;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -15,7 +16,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -50,7 +50,6 @@ class BoardTest {
 			.regDate(saveTime)
 			.modDate(saveTime)
 			.boardDate(saveTime)
-			.isPriceSuggest(false)
 			.isPull(true)
 			.latitude(37.587111)
 			.longitude(126.969069)
@@ -66,7 +65,6 @@ class BoardTest {
 			.content("내용 청운동")
 			.price(1_000_000L)
 			.locationName("서울 종로구 청운동")
-			.isPriceSuggest(true)
 			.categoryId(1L)
 			.build();
 		mockMvc.perform(post("/api/boards")
@@ -93,7 +91,6 @@ class BoardTest {
 		BoardSaveDto boardSaveDto = BoardSaveDto.builder()
 			.price(1_000_000L)
 			.locationName("서울 종로구 청운동")
-			.isPriceSuggest(true)
 			.categoryId(1L)
 			.build();
 		mockMvc.perform(post("/api/boards")
@@ -110,7 +107,6 @@ class BoardTest {
 			.content("내용 청운동")
 			.price(1_000_000L)
 			.locationName("서울 종로구 청운동")
-			.isPriceSuggest(true)
 			.categoryId(1L)
 			.build();
 		mockMvc.perform(post("/api/boards")
@@ -128,7 +124,6 @@ class BoardTest {
 			.content("  ")
 			.price(1_000_000L)
 			.locationName("서울 종로구 청운동")
-			.isPriceSuggest(true)
 			.categoryId(1L)
 			.build();
 		mockMvc.perform(post("/api/boards")
@@ -145,7 +140,6 @@ class BoardTest {
 			.title("제목 청운동")
 			.content("내용 청운동")
 			.locationName("서울 종로구 청운동")
-			.isPriceSuggest(true)
 			.categoryId(1L)
 			.build();
 		mockMvc.perform(post("/api/boards")
@@ -163,7 +157,6 @@ class BoardTest {
 		boardMap.put("content", "내용 청운동");
 		boardMap.put("price", "a");
 		boardMap.put("locationName", "서울 종로구 청운동");
-		boardMap.put("isPriceSuggest", "true");
 		boardMap.put("categoryId", "1");
 		mockMvc.perform(post("/api/boards")
 			.contentType(MediaType.APPLICATION_JSON)
@@ -180,7 +173,6 @@ class BoardTest {
 		boardMap.put("content", "내용 청운동");
 		boardMap.put("price", "20000");
 		boardMap.put("locationName", "서울 종로구 청운동");
-		boardMap.put("isPriceSuggest", "true");
 		boardMap.put("categoryId", "1a");
 		mockMvc.perform(post("/api/boards")
 			.contentType(MediaType.APPLICATION_JSON)
@@ -214,7 +206,6 @@ class BoardTest {
 		boardMap.put("content", "내용 청운동");
 		boardMap.put("price", "20000");
 		boardMap.put("locationName", "서울 종로구 청운동");
-		boardMap.put("isPriceSuggest", "true");
 		boardMap.put("categoryId", "1");
 		mockMvc.perform(post("/api/boards")
 			.contentType(MediaType.APPLICATION_JSON)
@@ -226,7 +217,8 @@ class BoardTest {
 	@Test
 	@DisplayName("게시글 전체 조회 테스트 - 성공")
 	void findSuccessBoardByAll() throws Exception {
-		mockMvc.perform(get("/api/boards/all"))
+		mockMvc.perform(get("/api/boards")
+			.queryParam("location","서울 종로구 청운동"))
 			.andDo(print())
 			.andExpect(status().isOk());
 	}
@@ -234,8 +226,9 @@ class BoardTest {
 	@Test
 	@DisplayName("게시글 전체 조회 테스트 - 제목 입력 - 성공")
 	void findSuccessBoardByTitleAll() throws Exception {
-		mockMvc.perform(get("/api/boards/all")
-			.param("title", "테스트"))
+		mockMvc.perform(get("/api/boards")
+			.queryParam("location","서울 종로구 청운동")
+			.param("TITLE", "테스트"))
 			.andDo(print())
 			.andExpect(status().isOk());
 	}
@@ -243,29 +236,20 @@ class BoardTest {
 	@Test
 	@DisplayName("게시글 전체 조회 테스트 - 내용 입력 - 성공")
 	void findSuccessBoardByContentAll() throws Exception {
-		mockMvc.perform(get("/api/boards/all")
-			.param("content", "테스트"))
+		mockMvc.perform(get("/api/boards")
+			.queryParam("location","서울 종로구 청운동")
+			.param("CONTENT", "테스트"))
 			.andDo(print())
 			.andExpect(status().isOk());
 	}
 
 
 	@Test
-	@DisplayName("게시글 전체 조회 테스트 - 제목, 내용 입력 - 성공")
-	void findSuccessBoardByTitleAndContentAll() throws Exception {
-		mockMvc.perform(get("/api/boards/all")
-			.param("title", "테스트")
-			.param("content", "테스트"))
-			.andDo(print())
-			.andExpect(status().isOk());
-	}
-
-	@Test
-	@DisplayName("게시글 전체 조회 테스트 - 제목, 내용 공백 입력 - findByAll 로 조회- 성공")
+	@DisplayName("게시글 전체 조회 테스트 - 제목 공백 입력 - findAll 로 조회- 성공")
 	void findSuccessBoardByNoTitleAndNoContentAll() throws Exception {
-		mockMvc.perform(get("/api/boards/all")
-			.queryParam("title", "  ")
-			.queryParam("content", "  "))
+		mockMvc.perform(get("/api/boards")
+			.queryParam("location","서울 종로구 청운동")
+			.queryParam("TITLE", "  "))
 			.andDo(print())
 			.andExpect(status().isOk());
 	}
