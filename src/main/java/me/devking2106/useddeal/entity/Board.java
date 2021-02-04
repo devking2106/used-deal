@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import me.devking2106.useddeal.common.utils.type.CommonStatus;
 
 
 @Getter
@@ -23,6 +22,11 @@ public class Board {
 
 	}
 
+	public enum FilterType {
+		TITLE, CONTENT, TITLE_OR_CONTENT
+	}
+
+
 	private final Long id;
 	private final Long userId;
 	private final Long locationId;
@@ -35,8 +39,7 @@ public class Board {
 	private final LocalDateTime regDate;
 	private final LocalDateTime modDate;
 	private final LocalDateTime boardDate;
-	private final boolean isPriceSuggestYN;
-	private final boolean isPullYN;
+	private final boolean isPull;
 	private final Double latitude;
 	private final Double longitude;
 

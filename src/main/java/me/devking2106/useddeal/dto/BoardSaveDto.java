@@ -6,6 +6,8 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,14 +35,10 @@ public class BoardSaveDto {
 	@Min(0)
 	private Long categoryId;
 
-	private boolean priceSuggestYN;
-
 	@NotBlank
 	private String locationName;
 
-
-
-	public Board toEntity(Long userId, String locationName, Long locationId, Double latitude, Double longitude) {
+	public Board toEntity(Long userId, String locationName, Long locationId, double latitude, double longitude) {
 		LocalDateTime saveTime = LocalDateTime.now();
 		return Board.builder()
 			.userId(userId)
@@ -54,8 +52,7 @@ public class BoardSaveDto {
 			.regDate(saveTime)
 			.modDate(saveTime)
 			.boardDate(saveTime)
-			.priceSuggestYN(priceSuggestYN)
-			.pullYN(false)
+			.isPull(false)
 			.latitude(latitude)
 			.longitude(longitude)
 			.build();
