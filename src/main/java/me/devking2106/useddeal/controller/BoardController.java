@@ -6,11 +6,11 @@ package me.devking2106.useddeal.controller;
 import java.util.List;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
+import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,16 +36,16 @@ public class BoardController {
 
 	@PostMapping("/boards")
 	public ResponseEntity<Board> register(@Valid @RequestBody BoardSaveDto boardSaveDto,
-		BindingResult bindingResult) {
+		BindingResult bindingResult) throws BindException {
 		if (bindingResult.hasErrors()) {
-			throw new RuntimeException("입력 범위를 확인해주세요");
+			throw new BindException(bindingResult);
 		}
 		Board boardInfo = boardService.saveBoard(boardSaveDto);
 		return new ResponseEntity<>(boardInfo, HttpStatus.CREATED);
 	}
 
 	@GetMapping("/boards/{id}")
-	public ResponseEntity<BoardDetailDto> findByBoardId(@PathVariable @Min(0) Long id) {
+	public ResponseEntity<BoardDetailDto> findById(@PathVariable Long id) {
 		BoardDetailDto boardInfo = boardService.findById(id);
 		return new ResponseEntity<>(boardInfo, HttpStatus.OK);
 	}
