@@ -1,5 +1,6 @@
 package me.devking2106.useddeal.controller.response;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -29,13 +30,7 @@ public class ErrorResponse {
 
 	private String message;
 	private int status;
-	private List<FieldErrorDetail> errors;
-
-	private ErrorResponse(StatusException statusException, List<FieldErrorDetail> errors) {
-		this.message = statusException.getMessage();
-		this.status = statusException.getStatus();
-		this.errors = errors;
-	}
+	private List<ErrorDetailResponse> errors;
 
 	private ErrorResponse(StatusException statusException) {
 		this.message = statusException.getMessage();
@@ -43,32 +38,33 @@ public class ErrorResponse {
 		this.errors = new ArrayList<>();
 	}
 
-	private ErrorResponse(ExceptionStatus exceptionStatus, List<FieldErrorDetail> errors) {
+	private ErrorResponse(ExceptionStatus exceptionStatus, List<ErrorDetailResponse> errors) {
 		this.message = exceptionStatus.getMessage();
 		this.status = exceptionStatus.getStatus();
 		this.errors = errors;
 	}
 
 	public static ErrorResponse of(ExceptionStatus code, BindingResult bindingResult) {
-		return new ErrorResponse(code, FieldErrorDetail.of(bindingResult));
+		return new ErrorResponse(code, ErrorDetailResponse.of(bindingResult));
 	}
 
 	public static ErrorResponse of(StatusException statusException) {
 		return new ErrorResponse(statusException);
 	}
 
-	public static ErrorResponse of(StatusException statusException, List<FieldErrorDetail> errors) {
-		return new ErrorResponse(statusException, errors);
-	}
-
 	public static ErrorResponse of(MethodArgumentTypeMismatchException ex) {
 		String value = ex.getValue() == null ? "" : ex.getValue().toString();
-		List<FieldErrorDetail> errors = FieldErrorDetail.of(ex.getName(), value, ex.getErrorCode());
+		List<ErrorDetailResponse> errors = ErrorDetailResponse.of(ex.getName(), value, ex.getErrorCode());
 		return new ErrorResponse(ExceptionStatus.INVALID_TYPE_VALUE_EXCEPTION, errors);
 	}
 
 	public static ErrorResponse of(InvalidFormatException ex) {
-		List<FieldErrorDetail> errors = FieldErrorDetail.of(ex.getPath().get(0).getFieldName(), ex.getValue().toString(),
+		String field = Arrays.stream(Objects.requireNonNull(ex.getTargetType().getFields()))
+			.map(Field::getName)
+			.collect(Collectors.joining(", "));
+		List<ErrorDetailResponse> errors = ErrorDetailResponse.of(
+			ex.getPath().size() == 0 ? "지원 Enum = " + field : ex.getPath().get(0).getFieldName(),
+			ex.getValue().toString(),
 			ex.getTargetType().toString());
 		return new ErrorResponse(ExceptionStatus.INVALID_FORMAT_EXCEPTION, errors);
 	}
@@ -77,7 +73,8 @@ public class ErrorResponse {
 		String supportedMethods = Arrays.stream(Objects.requireNonNull(ex.getSupportedMethods()))
 			.map(String::toString)
 			.collect(Collectors.joining(", "));
-		List<FieldErrorDetail> details = FieldErrorDetail.of(ex.getLocalizedMessage(), "입력한 HTTP Method = " + ex.getMethod(),
+		List<ErrorDetailResponse> details = ErrorDetailResponse.of(ex.getLocalizedMessage(),
+			"입력한 HTTP Method = " + ex.getMethod(),
 			"지원 가능한 HTTP Method = " + supportedMethods);
 		return new ErrorResponse(ExceptionStatus.METHOD_NOT_ALLOWED, details);
 	}

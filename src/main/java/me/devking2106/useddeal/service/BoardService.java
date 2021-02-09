@@ -62,7 +62,6 @@ public class BoardService {
 		long userId = 1;
 		BoardDetailDto boardInfo = boardMapper.findById(boardId);
 		boardIsEmpty(boardInfo);
-
 		// 글이 숨김이고 내가 작성한 글이 아닐 경우 보지 못한다
 		if (boardInfo.getUserId() != userId && boardInfo.getStatus().equals(Board.Status.HIDE)) {
 			throw new BoardStatusHideException();

@@ -15,26 +15,26 @@ import lombok.ToString;
 @Getter
 @ToString
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class FieldErrorDetail {
+public class ErrorDetailResponse {
 
 	private final String field;
 	private final String value;
 	private final String reason;
 
-	public static List<FieldErrorDetail> of(String field, String value, String reason) {
-		List<FieldErrorDetail> fieldErrors = new ArrayList<>();
-		fieldErrors.add(new FieldErrorDetail(field, value, reason));
+	public static List<ErrorDetailResponse> of(String field, String value, String reason) {
+		List<ErrorDetailResponse> fieldErrors = new ArrayList<>();
+		fieldErrors.add(new ErrorDetailResponse(field, value, reason));
 		return fieldErrors;
 	}
 
-	public static List<FieldErrorDetail> of(BindingResult bindingResult) {
-		final List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+	public static List<ErrorDetailResponse> of(BindingResult bindingResult) {
+		List<FieldError> fieldErrors = bindingResult.getFieldErrors();
 		return fieldErrors.stream()
-			.map(error -> new FieldErrorDetail(
+			.map(error -> new ErrorDetailResponse(
 				error.getField(),
 				error.getRejectedValue() == null ? "" : error.getRejectedValue().toString(),
 				error.getDefaultMessage() == null ? "" :
-					error.getDefaultMessage().contains("No enum") ? "Enum Type이 일치하지 않습니다." :
+					error.getDefaultMessage().contains("No enum") ? "Enum Type 이 일치하지 않습니다." :
 						error.getDefaultMessage()))
 			.collect(Collectors.toList());
 	}

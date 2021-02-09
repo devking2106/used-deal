@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
-
 @Getter
 @Builder
 @ToString
@@ -16,16 +15,12 @@ public class Board {
 	@Getter
 	@RequiredArgsConstructor
 	public enum Status {
-		SALE("판매중"), SALE_COMPLETED("거래완료"), TRADE("거래중"), HIDE("숨김"), RESERVATION("예약중");
-
-		private final String status;
-
+		SALE, SALE_COMPLETED, TRADE, HIDE, RESERVATION, PULL;
 	}
 
 	public enum FilterType {
 		TITLE, CONTENT, TITLE_OR_CONTENT
 	}
-
 
 	private final Long id;
 	private final Long userId;
