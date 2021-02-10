@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 @Getter
@@ -12,8 +11,6 @@ import lombok.ToString;
 @ToString
 public class Board {
 
-	@Getter
-	@RequiredArgsConstructor
 	public enum Status {
 		SALE, SALE_COMPLETED, TRADE, HIDE, RESERVATION, PULL;
 	}
