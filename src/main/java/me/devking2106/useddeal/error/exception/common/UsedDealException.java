@@ -2,16 +2,16 @@ package me.devking2106.useddeal.error.exception.common;
 
 import org.springframework.http.HttpStatus;
 
-public class StatusException extends RuntimeException {
+public class UsedDealException extends RuntimeException {
 
 	private final ExceptionStatus responseStatus;
 
-	public StatusException(ExceptionStatus responseStatus) {
+	public UsedDealException(ExceptionStatus responseStatus) {
 		super(responseStatus.getMessage());
 		this.responseStatus = responseStatus;
 	}
 
-	public StatusException(ExceptionStatus responseStatus, String message) {
+	public UsedDealException(ExceptionStatus responseStatus, String message) {
 		super(message);
 		this.responseStatus = responseStatus;
 	}
@@ -20,4 +20,7 @@ public class StatusException extends RuntimeException {
 		return responseStatus.getHttpStatus();
 	}
 
+	public String getStatus() {
+		return String.valueOf(responseStatus.getStatus());
+	}
 }
