@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import me.devking2106.useddeal.entity.Board;
+import me.devking2106.useddeal.error.exception.board.BoardStatusHideException;
 
 @Getter
 @Builder
@@ -28,21 +29,16 @@ public class BoardDetailDto {
 	private LocalDateTime boardDate;
 	private boolean isPull;
 
-	public BoardDetailDto toEntity(Long userId, String locationName, Long locationId, double latitude,
-		double longitude) {
-		return BoardDetailDto.builder()
-			.id(id)
-			.userId(userId)
-			.nickname(nickname)
-			.title(title)
-			.content(content)
-			.locationName(locationName)
-			.price(price)
-			.categoryId(categoryId)
-			.status(status)
-			.boardDate(boardDate)
-			.isPull(isPull)
-			.build();
+	public boolean isStatusUpdatable(Board.Status status) {
+		if (Board.Status.HIDE_CANCEL.equals(status) && !this.status.equals(Board.Status.HIDE)) {
+			return false;
+		}
+		return !this.status.equals(status);
 	}
 
+	public void boardNotHideAndMyBoard(long userId) {
+		if (this.userId != userId && this.status == Board.Status.HIDE) {
+			throw new BoardStatusHideException();
+		}
+	}
 }

@@ -1,5 +1,6 @@
 package me.devking2106.useddeal.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -11,11 +12,17 @@ import lombok.extern.log4j.Log4j2;
 import me.devking2106.useddeal.controller.request.BoardFindRequest;
 import me.devking2106.useddeal.dto.BoardDetailDto;
 import me.devking2106.useddeal.dto.BoardFindDto;
+import me.devking2106.useddeal.dto.BoardModifyDto;
 import me.devking2106.useddeal.dto.BoardSaveDto;
 import me.devking2106.useddeal.entity.Board;
+import me.devking2106.useddeal.error.exception.board.BoardDeleteFailedException;
 import me.devking2106.useddeal.error.exception.board.BoardNotFoundException;
+import me.devking2106.useddeal.error.exception.board.BoardNotMatchUserIdException;
+import me.devking2106.useddeal.error.exception.board.BoardPullFailedException;
 import me.devking2106.useddeal.error.exception.board.BoardSaveFailedException;
-import me.devking2106.useddeal.error.exception.board.BoardStatusHideException;
+import me.devking2106.useddeal.error.exception.board.BoardStatusFailedException;
+import me.devking2106.useddeal.error.exception.board.BoardTimeStampException;
+import me.devking2106.useddeal.error.exception.board.BoardUpdateFailedException;
 import me.devking2106.useddeal.error.exception.location.TownNotMatchException;
 import me.devking2106.useddeal.repository.mapper.BoardMapper;
 
@@ -31,8 +38,8 @@ public class BoardService {
 		// 유저가 있는지 체크 userIsEmpty(userInfo);
 		String locationName = "서울 종로구 청운동".trim();
 		Long locationId = 1111010100L;
-		Double latitude = 37.587111;
-		Double longitude = 126.969069;
+		double latitude = 37.587111;
+		double longitude = 126.969069;
 
 		// locationName 이 실제로 동네가 있는지 체크 후 있으면 등록 없으면 등록 안함
 		Board boardInfo = boardSaveDto.toEntity(userId, locationName, locationId, latitude, longitude);
@@ -63,10 +70,7 @@ public class BoardService {
 		BoardDetailDto boardInfo = boardMapper.findById(boardId);
 		boardIsEmpty(boardInfo);
 		// 글이 숨김이고 내가 작성한 글이 아닐 경우 보지 못한다
-		if (boardInfo.getUserId() != userId && boardInfo.getStatus().equals(Board.Status.HIDE)) {
-			throw new BoardStatusHideException();
-		}
-
+		boardInfo.boardNotHideAndMyBoard(userId);
 		return boardInfo;
 	}
 
@@ -78,8 +82,7 @@ public class BoardService {
 		long userIdResult = 1;
 
 		// 내 정보면 숨김을 표시해주고 내 정보가 아니면 숨김 게시글을 제외한다
-		List<BoardFindDto> boards = boardMapper.findByUser(userId, userIdResult);
-		return boards;
+		return boardMapper.findByUser(userId, userIdResult);
 	}
 
 	@Transactional(readOnly = true)
@@ -90,7 +93,90 @@ public class BoardService {
 		// location = 서울 종로구 청운동, 위경도 값
 		double latitude = 37.587111;
 		double longitude = 126.969069;
-		List<BoardFindDto> boards = boardMapper.findAll(boardFindRequest, latitude, longitude);
-		return boards;
+		return boardMapper.findAll(boardFindRequest, latitude, longitude);
+	}
+
+	public void updateByPull(Long id, Long userId, LocalDateTime updateTime) {
+		Long timeStamp = boardMapper.findByTimeStampDiff(id, userId);
+		String message = getTimeStampMessage(timeStamp);
+		if (timeStamp < 172800) {
+			throw new BoardTimeStampException(message);
+		}
+		int updateCount = boardMapper.updateByPull(id, userId, updateTime);
+		if (updateCount < 1) {
+			throw new BoardPullFailedException(message);
+		}
+	}
+
+	private String getTimeStampMessage(Long timeStamp) {
+		timeStamp = 172800 - timeStamp;
+		long day = timeStamp / (60 * 60 * 24);
+		long hour = (timeStamp - day * 60 * 60 * 24) / (60 * 60);
+		long minute = (timeStamp - day * 60 * 60 * 24 - hour * 3600) / 60;
+		long second = timeStamp % 60;
+		String message = day + "일 " + hour + "시간 " + minute + "분 " + second
+			+ "초";
+		return message;
+	}
+
+	public void updateByStatus(Long id, Board.Status status) {
+		BoardDetailDto boardDetailDto = boardMapper.findById(id);
+		boardIsEmpty(boardDetailDto);
+		long userId = 1;
+		if (userId != boardDetailDto.getUserId()) {
+			throw new BoardNotMatchUserIdException();
+		}
+		if (!boardDetailDto.isStatusUpdatable(status)) {
+			return;
+		}
+		LocalDateTime updateTime = LocalDateTime.now();
+		if (status.equals(Board.Status.PULL)) {
+			updateByPull(id, userId, updateTime);
+		} else if (status.equals(Board.Status.HIDE_CANCEL)) {
+			updateByHideCancel(id, userId, updateTime);
+		} else {
+			updateByStatus(id, status, userId, updateTime);
+		}
+	}
+
+	private void updateByStatus(Long id, Board.Status status, long userId, LocalDateTime updateTime) {
+		int updateCount = boardMapper.updateByStatus(id, userId, status, updateTime);
+		if (updateCount < 1) {
+			throw new BoardStatusFailedException(status);
+		}
+	}
+
+	private void updateByHideCancel(Long id, long userId, LocalDateTime updateTime) {
+		int updateCount = boardMapper.updateByStatus(id, userId, Board.Status.SALE, updateTime);
+		if (updateCount < 1) {
+			throw new BoardStatusFailedException(Board.Status.HIDE);
+		}
+	}
+
+	public void updateByBoard(Long id, BoardModifyDto boardModifyDto) {
+		BoardDetailDto boardDetailDto = boardMapper.findById(id);
+		boardIsEmpty(boardDetailDto);
+		long userId = 1;
+		if (userId != boardDetailDto.getUserId()) {
+			throw new BoardNotMatchUserIdException();
+		}
+		LocalDateTime updateTime = LocalDateTime.now();
+		int updateCount = boardMapper.updateByBoard(id, boardModifyDto, updateTime);
+		if (updateCount < 1) {
+			throw new BoardUpdateFailedException();
+		}
+	}
+
+	public void deleteByBoard(Long id) {
+		BoardDetailDto boardDetailDto = boardMapper.findById(id);
+		boardIsEmpty(boardDetailDto);
+		long userId = 1;
+		if (userId != boardDetailDto.getUserId()) {
+			throw new BoardNotMatchUserIdException();
+		}
+		int deleteCount = boardMapper.deleteByBoard(id);
+		if (deleteCount < 1) {
+			throw new BoardDeleteFailedException();
+		}
 	}
 }

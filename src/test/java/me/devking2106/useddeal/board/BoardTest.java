@@ -7,20 +7,29 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.Objects;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.validation.BindException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import me.devking2106.useddeal.dto.BoardModifyDto;
 import me.devking2106.useddeal.dto.BoardSaveDto;
 import me.devking2106.useddeal.entity.Board;
+import me.devking2106.useddeal.error.exception.board.BoardNotFoundException;
+import me.devking2106.useddeal.error.exception.board.BoardTimeStampException;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -74,7 +83,6 @@ class BoardTest {
 			.andExpect(status().isCreated());
 	}
 
-
 	/**
 	 * 게시글 생성 테스트 - 유저의 위치와 게시글 작성 동네가 다를때 - 실패
 	 * 추가
@@ -97,7 +105,10 @@ class BoardTest {
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(objectMapper.writeValueAsString(boardSaveDto)))
 			.andDo(print())
-			.andExpect(status().isBadRequest());
+			.andExpect(status().isBadRequest())
+			.andExpect(
+				result -> assertTrue(Objects.requireNonNull(result.getResolvedException()).getClass().isAssignableFrom(
+					MethodArgumentNotValidException.class)));
 	}
 
 	@Test
@@ -113,7 +124,10 @@ class BoardTest {
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(objectMapper.writeValueAsString(boardSaveDto)))
 			.andDo(print())
-			.andExpect(status().isBadRequest());
+			.andExpect(status().isBadRequest())
+			.andExpect(
+				result -> assertTrue(Objects.requireNonNull(result.getResolvedException()).getClass().isAssignableFrom(
+					MethodArgumentNotValidException.class)));
 	}
 
 	@Test
@@ -130,7 +144,10 @@ class BoardTest {
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(objectMapper.writeValueAsString(boardSaveDto)))
 			.andDo(print())
-			.andExpect(status().isBadRequest());
+			.andExpect(status().isBadRequest())
+			.andExpect(
+				result -> assertTrue(Objects.requireNonNull(result.getResolvedException()).getClass().isAssignableFrom(
+					MethodArgumentNotValidException.class)));
 	}
 
 	@Test
@@ -162,7 +179,10 @@ class BoardTest {
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(objectMapper.writeValueAsString(boardMap)))
 			.andDo(print())
-			.andExpect(status().isBadRequest());
+			.andExpect(status().isBadRequest())
+			.andExpect(
+				result -> assertTrue(Objects.requireNonNull(result.getResolvedException()).getClass().isAssignableFrom(
+					HttpMessageNotReadableException.class)));
 	}
 
 	@Test
@@ -178,7 +198,10 @@ class BoardTest {
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(objectMapper.writeValueAsString(boardMap)))
 			.andDo(print())
-			.andExpect(status().isBadRequest());
+			.andExpect(status().isBadRequest())
+			.andExpect(
+				result -> assertTrue(Objects.requireNonNull(result.getResolvedException()).getClass().isAssignableFrom(
+					HttpMessageNotReadableException.class)));
 	}
 
 	@Test
@@ -218,7 +241,7 @@ class BoardTest {
 	@DisplayName("게시글 전체 조회 테스트 - 성공")
 	void findSuccessBoardByAll() throws Exception {
 		mockMvc.perform(get("/api/boards")
-			.queryParam("location","서울 종로구 청운동"))
+			.queryParam("location", "서울 종로구 청운동"))
 			.andDo(print())
 			.andExpect(status().isOk());
 	}
@@ -227,7 +250,7 @@ class BoardTest {
 	@DisplayName("게시글 전체 조회 테스트 - 제목 입력 - 성공")
 	void findSuccessBoardByTitleAll() throws Exception {
 		mockMvc.perform(get("/api/boards")
-			.queryParam("location","서울 종로구 청운동")
+			.queryParam("location", "서울 종로구 청운동")
 			.param("TITLE", "테스트"))
 			.andDo(print())
 			.andExpect(status().isOk());
@@ -237,18 +260,17 @@ class BoardTest {
 	@DisplayName("게시글 전체 조회 테스트 - 내용 입력 - 성공")
 	void findSuccessBoardByContentAll() throws Exception {
 		mockMvc.perform(get("/api/boards")
-			.queryParam("location","서울 종로구 청운동")
+			.queryParam("location", "서울 종로구 청운동")
 			.param("CONTENT", "테스트"))
 			.andDo(print())
 			.andExpect(status().isOk());
 	}
 
-
 	@Test
 	@DisplayName("게시글 전체 조회 테스트 - 제목 공백 입력 - findAll 로 조회- 성공")
 	void findSuccessBoardByNoTitleAndNoContentAll() throws Exception {
 		mockMvc.perform(get("/api/boards")
-			.queryParam("location","서울 종로구 청운동")
+			.queryParam("location", "서울 종로구 청운동")
 			.queryParam("TITLE", "  "))
 			.andDo(print())
 			.andExpect(status().isOk());
@@ -267,7 +289,10 @@ class BoardTest {
 	void findFailureFindByBoardId() throws Exception {
 		mockMvc.perform(get("/api/boards/{id}", 200))
 			.andDo(print())
-			.andExpect(status().isBadRequest());
+			.andExpect(status().isBadRequest())
+			.andExpect(
+				result -> assertTrue(Objects.requireNonNull(result.getResolvedException()).getClass().isAssignableFrom(
+					BoardNotFoundException.class)));
 	}
 
 	@Test
@@ -275,7 +300,10 @@ class BoardTest {
 	void findFailureByBoardIdNotBoundsNumber() throws Exception {
 		mockMvc.perform(get("/api/boards/{id}", -1))
 			.andDo(print())
-			.andExpect(status().isBadRequest());
+			.andExpect(status().isNotFound())
+			.andExpect(
+				result -> assertTrue(Objects.requireNonNull(result.getResolvedException()).getClass().isAssignableFrom(
+					BoardNotFoundException.class)));
 	}
 
 	@Test
@@ -283,7 +311,10 @@ class BoardTest {
 	void findFailureByBoardIdNumber() throws Exception {
 		mockMvc.perform(get("/api/boards/{id}", "a"))
 			.andDo(print())
-			.andExpect(status().isBadRequest());
+			.andExpect(status().isBadRequest())
+			.andExpect(
+				result -> assertTrue(Objects.requireNonNull(result.getResolvedException()).getClass().isAssignableFrom(
+					MethodArgumentTypeMismatchException.class)));
 	}
 
 	@Test
@@ -315,8 +346,10 @@ class BoardTest {
 	void findFailureByLocationNameAndRange() throws Exception {
 		mockMvc.perform(get("/api/boards"))
 			.andDo(print())
-			.andExpect(status().isBadRequest());
-
+			.andExpect(status().isBadRequest())
+			.andExpect(
+				result -> assertTrue(Objects.requireNonNull(result.getResolvedException()).getClass().isAssignableFrom(
+					BindException.class)));
 	}
 
 	@Test
@@ -324,9 +357,100 @@ class BoardTest {
 	void findFailureByLocationNameAndRangeNotBounds() throws Exception {
 		mockMvc.perform(get("/api/boards")
 			.queryParam("location", "서울 종로구 청운동")
-			.queryParam("range", "ONE"))
+			.queryParam("range", "16"))
 			.andDo(print())
-			.andExpect(status().isBadRequest());
+			.andExpect(status().isBadRequest())
+			.andExpect(
+				result -> assertTrue(Objects.requireNonNull(result.getResolvedException()).getClass().isAssignableFrom(
+					BindException.class)));
+	}
+
+	/*====================================================수정===========================================*/
+
+	@Order(0)
+	@Test
+	@DisplayName("게시글 상태 변경 - SALE_COMPLETED - 성공")
+	void updateByStatusSaleCompleted() throws Exception {
+		mockMvc.perform(patch("/api/boards/1/status")
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(objectMapper.writeValueAsString("SALE_COMPLETED")))
+			.andDo(print())
+			.andExpect(status().isNoContent());
+	}
+
+	@Order(1)
+	@Test
+	@DisplayName("게시글 상태 변경 - HIDE - 성공")
+	void updateByStatusHide() throws Exception {
+		mockMvc.perform(patch("/api/boards/1/status")
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(objectMapper.writeValueAsString("HIDE")))
+			.andDo(print())
+			.andExpect(status().isNoContent());
+	}
+
+	@Order(2)
+	@Test
+	@DisplayName("게시글 상태 변경 - HIDE_CANCEL - 성공")
+	void updateByStatusHideCancel() throws Exception {
+		mockMvc.perform(patch("/api/boards/1/status")
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(objectMapper.writeValueAsString("HIDE_CANCEL")))
+			.andDo(print())
+			.andExpect(status().isNoContent());
+	}
+
+	@Order(3)
+	@Test
+	@DisplayName("게시글 상태 변경 - PULL - 성공")
+	void updateByStatusPull() throws Exception {
+		mockMvc.perform(patch("/api/boards/2/status")
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(objectMapper.writeValueAsString("PULL")))
+			.andDo(print())
+			.andExpect(status().isNoContent());
+	}
+
+	@Order(4)
+	@Test
+	@DisplayName("게시글 상태 변경 - PULL (게시일 2일 이내)- 실패")
+	void updateFailureByStatusPull() throws Exception {
+		mockMvc.perform(patch("/api/boards/1/status")
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(objectMapper.writeValueAsString("PULL")))
+			.andDo(print())
+			.andExpect(status().isBadRequest())
+			.andExpect(
+				result -> assertTrue(Objects.requireNonNull(result.getResolvedException()).getClass().isAssignableFrom(
+					BoardTimeStampException.class)));
+	}
+
+	@Order(5)
+	@Test
+	@DisplayName("게시글 수정 - 성공")
+	void updateBoard() throws Exception {
+		BoardModifyDto boardModifyDto = BoardModifyDto.builder()
+			.title("제목 청운동")
+			.content("내용 청운동")
+			.price(1_000_000L)
+			.categoryId(1L)
+			.build();
+		mockMvc.perform(put("/api/boards/1")
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(objectMapper.writeValueAsString(boardModifyDto)))
+			.andDo(print())
+			.andExpect(status().isNoContent());
+	}
+
+	/*====================================================삭제===========================================*/
+
+	@Order(6)
+	@Test
+	@DisplayName("게시글 삭제 - 성공")
+	void deleteBoard() throws Exception {
+		mockMvc.perform(delete("/api/boards/2"))
+			.andDo(print())
+			.andExpect(status().isNoContent());
 	}
 
 }

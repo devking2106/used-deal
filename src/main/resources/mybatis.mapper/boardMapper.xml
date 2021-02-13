@@ -99,4 +99,55 @@
         ORDER BY BOARD_DATE
     </select>
 
+    <update id="updateByPull" keyProperty="id">
+        UPDATE BOARD
+        SET IS_PULL    = 1,
+            BOARD_DATE = #{saveTime}
+        WHERE ID = (SELECT ID
+                    FROM (SELECT BOARD.ID,
+                                 TIMESTAMPDIFF(SECOND, BOARD_DATE, NOW()) AS TIMESTAMPDIFF
+                          FROM BOARD,
+                               USER
+                          WHERE BOARD.USER_ID = USER.ID
+                            AND BOARD.ID = #{id}
+                            AND USER.ID = #{userId})
+                    WHERE TIMESTAMPDIFF > 172800)
+    </update>
+    <update id="updateByStatus" keyProperty="id">
+        UPDATE BOARD
+        SET STATUS   = #{status},
+            MOD_DATE = #{saveTime}
+        WHERE ID = (SELECT BOARD.ID
+                    FROM BOARD,
+                         USER
+                    WHERE BOARD.USER_ID = USER.ID
+                      AND BOARD.ID = #{id}
+                      AND USER.ID = #{userId})
+    </update>
+
+    <update id="updateByBoard" keyProperty="id">
+        UPDATE BOARD
+        SET MOD_DATE    = #{updateTime},
+            TITLE       = #{boardModifyDto.title},
+            CONTENT     = #{boardModifyDto.content},
+            PRICE       = #{boardModifyDto.price},
+            CATEGORY_ID = #{boardModifyDto.categoryId}
+        WHERE ID = #{id}
+    </update>
+
+    <select id="findByTimeStampDiff" resultType="java.lang.Long">
+        SELECT TIMESTAMPDIFF(SECOND, BOARD_DATE, NOW()) AS TIMESTAMPDIFF
+        FROM BOARD,
+             USER
+        WHERE BOARD.USER_ID = USER.ID
+          AND BOARD.ID = #{id}
+          AND USER.ID = #{userId}
+    </select>
+
+    <delete id="deleteByBoard">
+        DELETE
+        FROM BOARD
+        WHERE ID = #{id}
+    </delete>
+
 </mapper>

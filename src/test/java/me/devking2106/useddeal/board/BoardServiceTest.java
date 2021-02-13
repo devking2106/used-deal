@@ -65,5 +65,5 @@ class BoardServiceTest {
 		//then
 		assertThrows(RuntimeException.class, () -> boardMapper.save(failedBoard));
 	}
-	
+
 }
