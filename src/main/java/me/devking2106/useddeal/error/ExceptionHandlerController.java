@@ -16,7 +16,7 @@ import lombok.extern.log4j.Log4j2;
 import me.devking2106.useddeal.controller.response.ErrorResponse;
 import me.devking2106.useddeal.controller.response.ExceptionResponseInfo;
 import me.devking2106.useddeal.error.exception.common.ExceptionStatus;
-import me.devking2106.useddeal.error.exception.common.StatusException;
+import me.devking2106.useddeal.error.exception.common.UsedDealException;
 
 @Log4j2
 @RestControllerAdvice
@@ -64,8 +64,8 @@ public class ExceptionHandlerController {
 		return ErrorResponse.of(exception);
 	}
 
-	@ExceptionHandler(StatusException.class)
-	private ResponseEntity<ExceptionResponseInfo> handleStatusException(StatusException exception) {
+	@ExceptionHandler(UsedDealException.class)
+	private ResponseEntity<ExceptionResponseInfo> handleStatusException(UsedDealException exception) {
 		ExceptionResponseInfo response = ExceptionResponseInfo.of(exception);
 		HttpStatus httpStatus = exception.getHttpStatus();
 		errorLogging(exception);
