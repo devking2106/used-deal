@@ -8,11 +8,15 @@ import org.springframework.util.ObjectUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import me.devking2106.useddeal.controller.request.BoardRequest;
+import me.devking2106.useddeal.controller.request.BoardFindRequest;
 import me.devking2106.useddeal.dto.BoardDetailDto;
 import me.devking2106.useddeal.dto.BoardFindDto;
 import me.devking2106.useddeal.dto.BoardSaveDto;
 import me.devking2106.useddeal.entity.Board;
+import me.devking2106.useddeal.error.exception.board.BoardNotFoundException;
+import me.devking2106.useddeal.error.exception.board.BoardSaveFailedException;
+import me.devking2106.useddeal.error.exception.board.BoardStatusHideException;
+import me.devking2106.useddeal.error.exception.location.TownNotMatchException;
 import me.devking2106.useddeal.repository.mapper.BoardMapper;
 
 @Log4j2
@@ -36,11 +40,11 @@ public class BoardService {
 		if (locationName.equals(boardInfo.getLocationName())) {
 			int saveResult = boardMapper.save(boardInfo);
 			if (saveResult != 1) {
-				throw new RuntimeException("게시글 저장에 실패 했습니다");
+				throw new BoardSaveFailedException();
 			}
 		} else {
 			String boardLocationName = boardInfo.getLocationName();
-			throw new RuntimeException("동네가 일치하지 않습니다. 글쓰기를 하려면 " + boardLocationName + " 동네인증이 필요합니다 ");
+			throw new TownNotMatchException(boardLocationName);
 		}
 		//  boardInfo.getId() 받아와서 image 저장
 		return boardInfo;
@@ -48,7 +52,7 @@ public class BoardService {
 
 	public static void boardIsEmpty(Object boards) {
 		if (ObjectUtils.isEmpty(boards)) {
-			throw new RuntimeException("게시글이 존재하지 않습니다.");
+			throw new BoardNotFoundException();
 		}
 	}
 
@@ -58,10 +62,9 @@ public class BoardService {
 		long userId = 1;
 		BoardDetailDto boardInfo = boardMapper.findById(boardId);
 		boardIsEmpty(boardInfo);
-
 		// 글이 숨김이고 내가 작성한 글이 아닐 경우 보지 못한다
 		if (boardInfo.getUserId() != userId && boardInfo.getStatus().equals(Board.Status.HIDE)) {
-			throw new RuntimeException("숨긴 글은 볼 수 없습니다");
+			throw new BoardStatusHideException();
 		}
 
 		return boardInfo;
@@ -80,7 +83,7 @@ public class BoardService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<BoardFindDto> findAll(BoardRequest.Find boardFindRequest) {
+	public List<BoardFindDto> findAll(BoardFindRequest boardFindRequest) {
 		// 임시 boardFindRequest.range 범위 0~15 처리 추후 Location.Range 로 처리
 		// location 지역이 있는지 확인 후 없는 지역이면 예외 처리
 
