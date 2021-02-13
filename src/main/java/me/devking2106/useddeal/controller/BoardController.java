@@ -5,8 +5,6 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.BindException;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,34 +30,26 @@ public class BoardController {
 
 	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping("/boards")
-	public Board register(@Valid @RequestBody BoardSaveDto boardSaveDto,
-		BindingResult bindingResult) throws BindException {
-		if (bindingResult.hasErrors()) {
-			throw new BindException(bindingResult);
-		}
-		Board boardInfo = boardService.saveBoard(boardSaveDto);
-		return boardInfo;
+	public Board save(@Valid @RequestBody BoardSaveDto boardSaveDto) {
+		return boardService.saveBoard(boardSaveDto);
 	}
 
 	@ResponseStatus(HttpStatus.OK)
 	@GetMapping("/boards/{id}")
 	public BoardDetailDto findById(@PathVariable Long id) {
-		BoardDetailDto boardInfo = boardService.findById(id);
-		return boardInfo;
+		return boardService.findById(id);
 	}
 
 	@ResponseStatus(HttpStatus.OK)
 	@GetMapping("/boards")
 	public List<BoardFindDto> findAll(@Valid BoardFindRequest boardFindRequest) {
-		List<BoardFindDto> boards = boardService.findAll(boardFindRequest);
-		return boards;
+		return boardService.findAll(boardFindRequest);
 	}
 
 	@ResponseStatus(HttpStatus.OK)
 	@GetMapping("/users/{userId}/boards")
 	public List<BoardFindDto> findByUser(@PathVariable Long userId) {
-		List<BoardFindDto> boards = boardService.findByUser(userId);
-		return boards;
+		return boardService.findByUser(userId);
 	}
 
 }

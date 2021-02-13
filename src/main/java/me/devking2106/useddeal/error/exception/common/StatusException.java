@@ -1,20 +1,23 @@
 package me.devking2106.useddeal.error.exception.common;
 
-import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
-@Getter
 public class StatusException extends RuntimeException {
 
-	private final int status;
+	private final ExceptionStatus responseStatus;
 
-	public StatusException(ExceptionStatus exceptionStatus) {
-		super(exceptionStatus.getMessage());
-		this.status = exceptionStatus.getStatus();
+	public StatusException(ExceptionStatus responseStatus) {
+		super(responseStatus.getMessage());
+		this.responseStatus = responseStatus;
 	}
 
-	public StatusException(ExceptionStatus exceptionStatus, String message) {
+	public StatusException(ExceptionStatus responseStatus, String message) {
 		super(message);
-		this.status = exceptionStatus.getStatus();
+		this.responseStatus = responseStatus;
+	}
+
+	public HttpStatus getHttpStatus() {
+		return responseStatus.getHttpStatus();
 	}
 
 }

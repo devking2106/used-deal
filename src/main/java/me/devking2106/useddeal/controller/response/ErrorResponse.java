@@ -1,7 +1,6 @@
 package me.devking2106.useddeal.controller.response;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -19,7 +18,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import me.devking2106.useddeal.error.exception.common.ExceptionStatus;
-import me.devking2106.useddeal.error.exception.common.StatusException;
 
 @Getter
 @Builder
@@ -29,27 +27,17 @@ import me.devking2106.useddeal.error.exception.common.StatusException;
 public class ErrorResponse {
 
 	private String message;
-	private int status;
+	private String status;
 	private List<ErrorDetailResponse> errors;
-
-	private ErrorResponse(StatusException statusException) {
-		this.message = statusException.getMessage();
-		this.status = statusException.getStatus();
-		this.errors = new ArrayList<>();
-	}
 
 	private ErrorResponse(ExceptionStatus exceptionStatus, List<ErrorDetailResponse> errors) {
 		this.message = exceptionStatus.getMessage();
-		this.status = exceptionStatus.getStatus();
+		this.status = String.valueOf(exceptionStatus.getStatus());
 		this.errors = errors;
 	}
 
 	public static ErrorResponse of(ExceptionStatus code, BindingResult bindingResult) {
 		return new ErrorResponse(code, ErrorDetailResponse.of(bindingResult));
-	}
-
-	public static ErrorResponse of(StatusException statusException) {
-		return new ErrorResponse(statusException);
 	}
 
 	public static ErrorResponse of(MethodArgumentTypeMismatchException ex) {
@@ -62,10 +50,11 @@ public class ErrorResponse {
 		String field = Arrays.stream(Objects.requireNonNull(ex.getTargetType().getFields()))
 			.map(Field::getName)
 			.collect(Collectors.joining(", "));
+		String getTargetType = ex.getTargetType().toString();
 		List<ErrorDetailResponse> errors = ErrorDetailResponse.of(
 			ex.getPath().size() == 0 ? "지원 Enum = " + field : ex.getPath().get(0).getFieldName(),
 			ex.getValue().toString(),
-			ex.getTargetType().toString());
+			getTargetType.contains("$") ? getTargetType.substring('$' + 1) : getTargetType);
 		return new ErrorResponse(ExceptionStatus.INVALID_FORMAT_EXCEPTION, errors);
 	}
 
@@ -76,6 +65,6 @@ public class ErrorResponse {
 		List<ErrorDetailResponse> details = ErrorDetailResponse.of(ex.getLocalizedMessage(),
 			"입력한 HTTP Method = " + ex.getMethod(),
 			"지원 가능한 HTTP Method = " + supportedMethods);
-		return new ErrorResponse(ExceptionStatus.METHOD_NOT_ALLOWED, details);
+		return new ErrorResponse(ExceptionStatus.METHOD_NOT_SUPPORT, details);
 	}
 }

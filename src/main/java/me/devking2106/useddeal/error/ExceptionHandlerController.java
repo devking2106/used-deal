@@ -1,6 +1,7 @@
 package me.devking2106.useddeal.error;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -13,6 +14,7 @@ import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
 import lombok.extern.log4j.Log4j2;
 import me.devking2106.useddeal.controller.response.ErrorResponse;
+import me.devking2106.useddeal.controller.response.ExceptionResponseInfo;
 import me.devking2106.useddeal.error.exception.common.ExceptionStatus;
 import me.devking2106.useddeal.error.exception.common.StatusException;
 
@@ -26,10 +28,9 @@ public class ExceptionHandlerController {
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	private ErrorResponse handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
-		final ErrorResponse response = ErrorResponse.of(ExceptionStatus.INVALID_INPUT_VALUE,
-			exception.getBindingResult());
 		errorLogging(exception);
-		return response;
+		return ErrorResponse.of(ExceptionStatus.INVALID_INPUT_VALUE,
+			exception.getBindingResult());
 	}
 
 	/**
@@ -38,9 +39,8 @@ public class ExceptionHandlerController {
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
 	private ErrorResponse handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException exception) {
-		final ErrorResponse response = ErrorResponse.of(exception);
 		errorLogging(exception);
-		return response;
+		return ErrorResponse.of(exception);
 	}
 
 	/**
@@ -49,10 +49,9 @@ public class ExceptionHandlerController {
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(BindException.class)
 	private ErrorResponse handleBindException(BindException exception) {
-		final ErrorResponse response = ErrorResponse.of(ExceptionStatus.INVALID_TYPE_VALUE_EXCEPTION,
-			exception.getBindingResult());
 		errorLogging(exception);
-		return response;
+		return ErrorResponse.of(ExceptionStatus.INVALID_TYPE_VALUE_EXCEPTION,
+			exception.getBindingResult());
 	}
 
 	/**
@@ -62,16 +61,15 @@ public class ExceptionHandlerController {
 	@ExceptionHandler(HttpRequestMethodNotSupportedException.class)
 	private ErrorResponse handleHttpRequestMethodNotSupportedException(
 		HttpRequestMethodNotSupportedException exception) {
-		final ErrorResponse response = ErrorResponse.of(exception);
-		return response;
+		return ErrorResponse.of(exception);
 	}
 
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(StatusException.class)
-	private ErrorResponse handleStatusException(StatusException exception) {
-		final ErrorResponse response = ErrorResponse.of(exception);
+	private ResponseEntity<ExceptionResponseInfo> handleStatusException(StatusException exception) {
+		ExceptionResponseInfo response = ExceptionResponseInfo.of(exception);
+		HttpStatus httpStatus = exception.getHttpStatus();
 		errorLogging(exception);
-		return response;
+		return new ResponseEntity<>(response, httpStatus);
 	}
 
 	/**
@@ -80,9 +78,8 @@ public class ExceptionHandlerController {
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(InvalidFormatException.class)
 	private ErrorResponse handleInvalidFormatException(InvalidFormatException exception) {
-		final ErrorResponse response = ErrorResponse.of(exception);
 		errorLogging(exception);
-		return response;
+		return ErrorResponse.of(exception);
 	}
 
 	private void errorLogging(Exception ex) {
