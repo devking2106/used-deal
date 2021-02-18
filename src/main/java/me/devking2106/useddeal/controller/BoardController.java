@@ -58,19 +58,19 @@ public class BoardController {
 
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@PatchMapping("/boards/{id}/status")
-	public void updateByStatus(@PathVariable Long id, @RequestBody Board.Status status) {
-		boardService.updateByStatus(id, status);
+	public void updateStatue(@PathVariable Long id, @RequestBody Board.Status status) {
+		boardService.updateStatus(id, status);
 	}
 
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@PutMapping("/boards/{id}")
-	public void updateByBoard(@PathVariable Long id, @Valid @RequestBody BoardModifyDto boardModifyDto) {
-		boardService.updateByBoard(id, boardModifyDto);
+	public void updateBoard(@PathVariable Long id, @Valid @RequestBody BoardModifyDto boardModifyDto) {
+		boardService.updateBoard(id, boardModifyDto);
 	}
 
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@DeleteMapping("/boards/{id}")
-	public void delete(@PathVariable Long id) {
-		boardService.deleteByBoard(id);
+	public void deleteBoard(@PathVariable Long id) {
+		boardService.deleteById(id);
 	}
 }

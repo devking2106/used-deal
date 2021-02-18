@@ -24,15 +24,11 @@ public interface BoardMapper {
 	List<BoardFindDto> findAll(@Param("boardFindRequest") BoardFindRequest boardFindRequest,
 		@Param("latitude") double latitude, @Param("longitude") double longitude);
 
-	int updateByPull(@Param("id") Long id, @Param("userId") Long userId, @Param("saveTime") LocalDateTime saveTime);
-
-	Long findByTimeStampDiff(@Param("id") Long id, @Param("userId") Long userId);
-
-	int updateByStatus(@Param("id") Long id, @Param("userId") Long userId, @Param("status") Board.Status status,
-		@Param("saveTime") LocalDateTime saveTime);
-
-	int updateByBoard(@Param("id") Long id, @Param("boardModifyDto") BoardModifyDto boardModifyDto,
+	int updateStatus(@Param("id") Long id, @Param("userId") Long userId, @Param("status") Board.Status status,
 		@Param("updateTime") LocalDateTime updateTime);
 
-	int deleteByBoard(Long id);
+	int updateBoard(@Param("id") Long id, @Param("boardModifyDto") BoardModifyDto boardModifyDto,
+		@Param("updateTime") LocalDateTime updateTime);
+
+	int deleteById(Long id);
 }

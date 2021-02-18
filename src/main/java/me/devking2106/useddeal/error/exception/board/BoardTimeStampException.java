@@ -6,6 +6,6 @@ import me.devking2106.useddeal.error.exception.common.UsedDealException;
 public class BoardTimeStampException extends UsedDealException {
 
 	public BoardTimeStampException(String message) {
-		super(ExceptionStatus.BOARD_TIMESTAMP_EXCEPTION, message + " 뒤에 끌어올릴 수 있습니다.");
+		super(ExceptionStatus.BOARD_TIMESTAMP_EXCEPTION, message);
 	}
 }

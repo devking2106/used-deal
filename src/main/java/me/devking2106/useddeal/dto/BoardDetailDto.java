@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import me.devking2106.useddeal.entity.Board;
-import me.devking2106.useddeal.error.exception.board.BoardStatusHideException;
 
 @Getter
 @Builder
@@ -30,15 +29,19 @@ public class BoardDetailDto {
 	private boolean isPull;
 
 	public boolean isStatusUpdatable(Board.Status status) {
-		if (Board.Status.HIDE_CANCEL.equals(status) && !this.status.equals(Board.Status.HIDE)) {
-			return false;
+		// status 가 HIDE 일때 HIDE_CANCEL(패스) true 아닐때 HIDE
+		if (status == Board.Status.HIDE) {
+			return true;
 		}
-		return !this.status.equals(status);
+		// HIDE를 제외하고 boardDetailDto가 status와 같을 시 false
+		return !(this.status == status);
+		// if (Board.Status.HIDE_CANCEL.equals(status) && !this.status.equals(Board.Status.HIDE)) {
+		// 	return false;
+		// }
+		// return !this.status.equals(status);
 	}
 
-	public void boardNotHideAndMyBoard(long userId) {
-		if (this.userId != userId && this.status == Board.Status.HIDE) {
-			throw new BoardStatusHideException();
-		}
+	public boolean isBoardNotHideAndMyBoard(long userId) {
+		return this.userId != userId && this.status == Board.Status.HIDE;
 	}
 }

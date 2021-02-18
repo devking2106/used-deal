@@ -1,5 +1,6 @@
 package me.devking2106.useddeal.service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -21,6 +22,7 @@ import me.devking2106.useddeal.error.exception.board.BoardNotMatchUserIdExceptio
 import me.devking2106.useddeal.error.exception.board.BoardPullFailedException;
 import me.devking2106.useddeal.error.exception.board.BoardSaveFailedException;
 import me.devking2106.useddeal.error.exception.board.BoardStatusFailedException;
+import me.devking2106.useddeal.error.exception.board.BoardStatusHideException;
 import me.devking2106.useddeal.error.exception.board.BoardTimeStampException;
 import me.devking2106.useddeal.error.exception.board.BoardUpdateFailedException;
 import me.devking2106.useddeal.error.exception.location.TownNotMatchException;
@@ -70,7 +72,9 @@ public class BoardService {
 		BoardDetailDto boardInfo = boardMapper.findById(boardId);
 		boardIsEmpty(boardInfo);
 		// 글이 숨김이고 내가 작성한 글이 아닐 경우 보지 못한다
-		boardInfo.boardNotHideAndMyBoard(userId);
+		if (boardInfo.isBoardNotHideAndMyBoard(userId)) {
+			throw new BoardStatusHideException();
+		}
 		return boardInfo;
 	}
 
@@ -96,30 +100,21 @@ public class BoardService {
 		return boardMapper.findAll(boardFindRequest, latitude, longitude);
 	}
 
-	public void updateByPull(Long id, Long userId, LocalDateTime updateTime) {
-		Long timeStamp = boardMapper.findByTimeStampDiff(id, userId);
-		String message = getTimeStampMessage(timeStamp);
-		if (timeStamp < 172800) {
-			throw new BoardTimeStampException(message);
+	public void updatePull(Long id, Board.Status status, Long userId,
+		BoardDetailDto boardDetailDto, LocalDateTime updateTime) {
+		LocalDateTime boardDate = boardDetailDto.getBoardDate();
+		long boardDateSeconds = Duration.between(boardDate, updateTime).getSeconds();
+		long twoDaysSeconds = Duration.ofDays(2).getSeconds();
+		if (boardDateSeconds < twoDaysSeconds) {
+			throw new BoardTimeStampException(String.valueOf(boardDateSeconds));
 		}
-		int updateCount = boardMapper.updateByPull(id, userId, updateTime);
+		int updateCount = boardMapper.updateStatus(id, userId, status, updateTime);
 		if (updateCount < 1) {
-			throw new BoardPullFailedException(message);
+			throw new BoardPullFailedException();
 		}
 	}
 
-	private String getTimeStampMessage(Long timeStamp) {
-		timeStamp = 172800 - timeStamp;
-		long day = timeStamp / (60 * 60 * 24);
-		long hour = (timeStamp - day * 60 * 60 * 24) / (60 * 60);
-		long minute = (timeStamp - day * 60 * 60 * 24 - hour * 3600) / 60;
-		long second = timeStamp % 60;
-		String message = day + "일 " + hour + "시간 " + minute + "분 " + second
-			+ "초";
-		return message;
-	}
-
-	public void updateByStatus(Long id, Board.Status status) {
+	public void updateStatus(Long id, Board.Status status) {
 		BoardDetailDto boardDetailDto = boardMapper.findById(id);
 		boardIsEmpty(boardDetailDto);
 		long userId = 1;
@@ -130,30 +125,36 @@ public class BoardService {
 			return;
 		}
 		LocalDateTime updateTime = LocalDateTime.now();
-		if (status.equals(Board.Status.PULL)) {
-			updateByPull(id, userId, updateTime);
-		} else if (status.equals(Board.Status.HIDE_CANCEL)) {
-			updateByHideCancel(id, userId, updateTime);
+		if (status == Board.Status.PULL) {
+			updatePull(id, status, userId, boardDetailDto, updateTime);
+		} else if (status == Board.Status.HIDE) {
+			updateHide(id, userId, boardDetailDto, updateTime);
 		} else {
-			updateByStatus(id, status, userId, updateTime);
+			updateStatus(id, status, userId, updateTime);
 		}
 	}
 
-	private void updateByStatus(Long id, Board.Status status, long userId, LocalDateTime updateTime) {
-		int updateCount = boardMapper.updateByStatus(id, userId, status, updateTime);
+	private void updateStatus(Long id, Board.Status status, long userId, LocalDateTime updateTime) {
+		int updateCount = boardMapper.updateStatus(id, userId, status, updateTime);
 		if (updateCount < 1) {
 			throw new BoardStatusFailedException(status);
 		}
 	}
 
-	private void updateByHideCancel(Long id, long userId, LocalDateTime updateTime) {
-		int updateCount = boardMapper.updateByStatus(id, userId, Board.Status.SALE, updateTime);
+	private void updateHide(Long id, long userId, BoardDetailDto boardDetailDto, LocalDateTime updateTime) {
+		Board.Status boardDetailDtoStatus = boardDetailDto.getStatus();
+		int updateCount;
+		if (boardDetailDtoStatus == Board.Status.HIDE) {
+			updateCount = boardMapper.updateStatus(id, userId, Board.Status.SALE, updateTime);
+		} else {
+			updateCount = boardMapper.updateStatus(id, userId, Board.Status.HIDE, updateTime);
+		}
 		if (updateCount < 1) {
 			throw new BoardStatusFailedException(Board.Status.HIDE);
 		}
 	}
 
-	public void updateByBoard(Long id, BoardModifyDto boardModifyDto) {
+	public void updateBoard(Long id, BoardModifyDto boardModifyDto) {
 		BoardDetailDto boardDetailDto = boardMapper.findById(id);
 		boardIsEmpty(boardDetailDto);
 		long userId = 1;
@@ -161,20 +162,20 @@ public class BoardService {
 			throw new BoardNotMatchUserIdException();
 		}
 		LocalDateTime updateTime = LocalDateTime.now();
-		int updateCount = boardMapper.updateByBoard(id, boardModifyDto, updateTime);
+		int updateCount = boardMapper.updateBoard(id, boardModifyDto, updateTime);
 		if (updateCount < 1) {
 			throw new BoardUpdateFailedException();
 		}
 	}
 
-	public void deleteByBoard(Long id) {
+	public void deleteById(Long id) {
 		BoardDetailDto boardDetailDto = boardMapper.findById(id);
 		boardIsEmpty(boardDetailDto);
 		long userId = 1;
 		if (userId != boardDetailDto.getUserId()) {
 			throw new BoardNotMatchUserIdException();
 		}
-		int deleteCount = boardMapper.deleteByBoard(id);
+		int deleteCount = boardMapper.deleteById(id);
 		if (deleteCount < 1) {
 			throw new BoardDeleteFailedException();
 		}
