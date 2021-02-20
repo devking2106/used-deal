@@ -29,16 +29,10 @@ public class BoardDetailDto {
 	private boolean isPull;
 
 	public boolean isStatusUpdatable(Board.Status status) {
-		// status 가 HIDE 일때 HIDE_CANCEL(패스) true 아닐때 HIDE
 		if (status == Board.Status.HIDE) {
 			return true;
 		}
-		// HIDE를 제외하고 boardDetailDto가 status와 같을 시 false
 		return !(this.status == status);
-		// if (Board.Status.HIDE_CANCEL.equals(status) && !this.status.equals(Board.Status.HIDE)) {
-		// 	return false;
-		// }
-		// return !this.status.equals(status);
 	}
 
 	public boolean isBoardNotHideAndMyBoard(long userId) {
