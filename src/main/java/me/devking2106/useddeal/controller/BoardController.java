@@ -34,8 +34,8 @@ public class BoardController {
 
 	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping("/boards")
-	public Board save(@Valid @RequestBody BoardSaveDto boardSaveDto) {
-		return boardService.saveBoard(boardSaveDto);
+	public Board register(@Valid @RequestBody BoardSaveDto boardSaveDto) {
+		return boardService.register(boardSaveDto);
 	}
 
 	@ResponseStatus(HttpStatus.OK)
