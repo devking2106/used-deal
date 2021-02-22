@@ -105,6 +105,7 @@
             SET IS_PULL = 1,
             MOD_DATE = #{updateTime},
             BOARD_DATE = #{updateTime}
+
         </if>
         <if test='!"PULL".equalsIgnoreCase(status)'>
             SET STATUS = #{status},

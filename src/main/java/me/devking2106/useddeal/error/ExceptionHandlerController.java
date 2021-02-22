@@ -12,13 +12,13 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import me.devking2106.useddeal.controller.response.ErrorResponse;
 import me.devking2106.useddeal.controller.response.ExceptionResponseInfo;
 import me.devking2106.useddeal.error.exception.common.ExceptionStatus;
 import me.devking2106.useddeal.error.exception.common.UsedDealException;
 
-@Log4j2
+@Slf4j
 @RestControllerAdvice
 public class ExceptionHandlerController {
 
