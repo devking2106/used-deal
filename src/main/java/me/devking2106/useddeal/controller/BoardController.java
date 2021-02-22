@@ -5,9 +5,12 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -17,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import me.devking2106.useddeal.controller.request.BoardFindRequest;
 import me.devking2106.useddeal.dto.BoardDetailDto;
 import me.devking2106.useddeal.dto.BoardFindDto;
+import me.devking2106.useddeal.dto.BoardModifyDto;
 import me.devking2106.useddeal.dto.BoardSaveDto;
 import me.devking2106.useddeal.entity.Board;
 import me.devking2106.useddeal.service.BoardService;
@@ -30,8 +34,8 @@ public class BoardController {
 
 	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping("/boards")
-	public Board save(@Valid @RequestBody BoardSaveDto boardSaveDto) {
-		return boardService.saveBoard(boardSaveDto);
+	public Board register(@Valid @RequestBody BoardSaveDto boardSaveDto) {
+		return boardService.register(boardSaveDto);
 	}
 
 	@ResponseStatus(HttpStatus.OK)
@@ -52,4 +56,21 @@ public class BoardController {
 		return boardService.findByUser(userId);
 	}
 
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	@PatchMapping("/boards/{id}/status")
+	public void updateStatue(@PathVariable Long id, @RequestBody Board.Status status) {
+		boardService.updateStatus(id, status);
+	}
+
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	@PutMapping("/boards/{id}")
+	public void updateBoard(@PathVariable Long id, @Valid @RequestBody BoardModifyDto boardModifyDto) {
+		boardService.updateBoard(id, boardModifyDto);
+	}
+
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	@DeleteMapping("/boards/{id}")
+	public void deleteBoard(@PathVariable Long id) {
+		boardService.deleteById(id);
+	}
 }

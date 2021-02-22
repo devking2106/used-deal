@@ -28,21 +28,11 @@ public class BoardDetailDto {
 	private LocalDateTime boardDate;
 	private boolean isPull;
 
-	public BoardDetailDto toEntity(Long userId, String locationName, Long locationId, double latitude,
-		double longitude) {
-		return BoardDetailDto.builder()
-			.id(id)
-			.userId(userId)
-			.nickname(nickname)
-			.title(title)
-			.content(content)
-			.locationName(locationName)
-			.price(price)
-			.categoryId(categoryId)
-			.status(status)
-			.boardDate(boardDate)
-			.isPull(isPull)
-			.build();
+	public boolean isStatusUpdatable(Board.Status status) {
+		return !(this.status == status);
 	}
 
+	public boolean isBoardNotHideAndMyBoard(long userId) {
+		return this.userId != userId && this.status == Board.Status.HIDE;
+	}
 }

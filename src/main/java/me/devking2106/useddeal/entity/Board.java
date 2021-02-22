@@ -12,7 +12,7 @@ import lombok.ToString;
 public class Board {
 
 	public enum Status {
-		SALE, SALE_COMPLETED, TRADE, HIDE, RESERVATION, PULL, HIDE_CANCEL
+		SALE, SALE_COMPLETED, TRADE, HIDE, RESERVATION, PULL
 	}
 
 	public enum FilterType {

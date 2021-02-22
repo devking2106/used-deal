@@ -99,4 +99,39 @@
         ORDER BY BOARD_DATE
     </select>
 
+    <update id="updateStatus" keyProperty="id">
+        UPDATE BOARD
+        <if test=' "PULL".equalsIgnoreCase(status)'>
+            SET IS_PULL = 1,
+            MOD_DATE = #{updateTime},
+            BOARD_DATE = #{updateTime}
+        </if>
+        <if test='!"PULL".equalsIgnoreCase(status)'>
+            SET STATUS = #{status},
+            MOD_DATE = #{updateTime}
+        </if>
+        WHERE ID = (SELECT BOARD.ID
+        FROM BOARD,
+        USER
+        WHERE BOARD.USER_ID = USER.ID
+        AND BOARD.ID = #{id}
+        AND USER.ID = #{userId})
+    </update>
+
+    <update id="updateBoard" keyProperty="id">
+        UPDATE BOARD
+        SET MOD_DATE    = #{updateTime},
+            TITLE       = #{boardModifyDto.title},
+            CONTENT     = #{boardModifyDto.content},
+            PRICE       = #{boardModifyDto.price},
+            CATEGORY_ID = #{boardModifyDto.categoryId}
+        WHERE ID = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE
+        FROM BOARD
+        WHERE ID = #{id}
+    </delete>
+
 </mapper>
