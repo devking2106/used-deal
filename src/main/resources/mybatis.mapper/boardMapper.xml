@@ -105,25 +105,17 @@
             SET IS_PULL = 1,
             MOD_DATE = #{updateTime},
             BOARD_DATE = #{updateTime}
-            WHERE ID = (SELECT ID
-            FROM (SELECT BOARD.ID,
-            TIMESTAMPDIFF(SECOND, BOARD_DATE, NOW()) AS TIMESTAMPDIFF
-            FROM BOARD, USER
-            WHERE BOARD.USER_ID = USER.ID
-            AND BOARD.ID = #{id}
-            AND USER.ID = #{userId})
-            WHERE TIMESTAMPDIFF > 172800)
         </if>
         <if test='!"PULL".equalsIgnoreCase(status)'>
             SET STATUS = #{status},
             MOD_DATE = #{updateTime}
-            WHERE ID = (SELECT BOARD.ID
-            FROM BOARD,
-            USER
-            WHERE BOARD.USER_ID = USER.ID
-            AND BOARD.ID = #{id}
-            AND USER.ID = #{userId})
         </if>
+        WHERE ID = (SELECT BOARD.ID
+        FROM BOARD,
+        USER
+        WHERE BOARD.USER_ID = USER.ID
+        AND BOARD.ID = #{id}
+        AND USER.ID = #{userId})
     </update>
 
     <update id="updateBoard" keyProperty="id">

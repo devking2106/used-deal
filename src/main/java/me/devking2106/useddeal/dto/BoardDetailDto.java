@@ -29,9 +29,6 @@ public class BoardDetailDto {
 	private boolean isPull;
 
 	public boolean isStatusUpdatable(Board.Status status) {
-		if (status == Board.Status.HIDE) {
-			return true;
-		}
 		return !(this.status == status);
 	}
 

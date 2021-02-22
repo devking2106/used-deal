@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import me.devking2106.useddeal.controller.request.BoardFindRequest;
 import me.devking2106.useddeal.dto.BoardDetailDto;
 import me.devking2106.useddeal.dto.BoardFindDto;
@@ -28,13 +27,12 @@ import me.devking2106.useddeal.error.exception.board.BoardUpdateFailedException;
 import me.devking2106.useddeal.error.exception.location.TownNotMatchException;
 import me.devking2106.useddeal.repository.mapper.BoardMapper;
 
-@Log4j2
 @Service
 @RequiredArgsConstructor
 public class BoardService {
 	private final BoardMapper boardMapper;
 
-	public Board saveBoard(BoardSaveDto boardSaveDto) {
+	public Board register(BoardSaveDto boardSaveDto) {
 		// userId = 유저 id, locationName = 유저의 동네 , locationId = 동네 id, latitude = 위도, longitude = 경도
 		long userId = 1;
 		// 유저가 있는지 체크 userIsEmpty(userInfo);
@@ -127,8 +125,6 @@ public class BoardService {
 		LocalDateTime updateTime = LocalDateTime.now();
 		if (status == Board.Status.PULL) {
 			updatePull(id, status, userId, boardDetailDto, updateTime);
-		} else if (status == Board.Status.HIDE) {
-			updateHide(id, userId, boardDetailDto, updateTime);
 		} else {
 			updateStatus(id, status, userId, updateTime);
 		}
@@ -138,19 +134,6 @@ public class BoardService {
 		int updateCount = boardMapper.updateStatus(id, userId, status, updateTime);
 		if (updateCount < 1) {
 			throw new BoardStatusFailedException(status);
-		}
-	}
-
-	private void updateHide(Long id, long userId, BoardDetailDto boardDetailDto, LocalDateTime updateTime) {
-		Board.Status boardDetailDtoStatus = boardDetailDto.getStatus();
-		int updateCount;
-		if (boardDetailDtoStatus == Board.Status.HIDE) {
-			updateCount = boardMapper.updateStatus(id, userId, Board.Status.SALE, updateTime);
-		} else {
-			updateCount = boardMapper.updateStatus(id, userId, Board.Status.HIDE, updateTime);
-		}
-		if (updateCount < 1) {
-			throw new BoardStatusFailedException(Board.Status.HIDE);
 		}
 	}
 
