@@ -15,9 +15,7 @@ mybatis:
   type-aliases-package: me.devking2106.useddeal.entity
 
 logging:
-  level:
-    root:
-      level: debug
+  config: classpath:log4j2.yml
 
 springdoc:
   api-docs:
