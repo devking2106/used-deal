@@ -1,0 +1,32 @@
+spring:
+  profiles:
+    active: dev
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/useddeal?characterEncoding=utf8&useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
+    username: devking2106
+    password: 12341234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  h2:
+    console:
+      enabled: true
+    datasource:
+      url: jdbc:h2:mem:test;MODE=MYSQL
+      driver-class-name: org.h2.Driver
+      username: sa
+
+
+mybatis:
+  mapper-locations: mybatis/mapper/**/*.xml
+  type-aliases-package: me.devking2106.useddeal.entity
+
+logging:
+  config: classpath:log4j2.yml
+
+springdoc:
+  api-docs:
+    path: /api-docs
+    groups:
+      enabled: true
+  swagger-ui:
+    path: /swagger-ui-custom.html
+

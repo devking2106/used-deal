@@ -18,6 +18,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -33,6 +34,7 @@ import me.devking2106.useddeal.error.exception.board.BoardTimeStampException;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("local")
 class BoardTest {
 
 	@Autowired
@@ -289,7 +291,7 @@ class BoardTest {
 	void findFailureFindByBoardId() throws Exception {
 		mockMvc.perform(get("/api/boards/{id}", 200))
 			.andDo(print())
-			.andExpect(status().isBadRequest())
+			.andExpect(status().isNotFound())
 			.andExpect(
 				result -> assertTrue(Objects.requireNonNull(result.getResolvedException()).getClass().isAssignableFrom(
 					BoardNotFoundException.class)));
@@ -385,17 +387,6 @@ class BoardTest {
 		mockMvc.perform(patch("/api/boards/1/status")
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(objectMapper.writeValueAsString("HIDE")))
-			.andDo(print())
-			.andExpect(status().isNoContent());
-	}
-
-	@Order(2)
-	@Test
-	@DisplayName("게시글 상태 변경 - HIDE_CANCEL - 성공")
-	void updateByStatusHideCancel() throws Exception {
-		mockMvc.perform(patch("/api/boards/1/status")
-			.contentType(MediaType.APPLICATION_JSON)
-			.content(objectMapper.writeValueAsString("HIDE_CANCEL")))
 			.andDo(print())
 			.andExpect(status().isNoContent());
 	}
