@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.devking2106.useddeal.repository.mapper.LocationMapper">
+
+    <select id="findByLocationName" resultType="me.devking2106.useddeal.entity.Location">
+        SELECT *
+        FROM LOCATION
+        WHERE LOCATION_NAME LIKE '${locationName}'
+    </select>
+
+    <select id="findAll" resultType="me.devking2106.useddeal.dto.LocationFindDto">
+        SELECT ID, CONCAT(TOWN, ', ', CITY) AS LOCATION_NAME, RELATED_LOCATION
+        FROM (
+                 SELECT *,
+                        (6371 *
+                         acos(cos(radians(#{latitude})) * cos(radians(LATITUDE)) *
+                              cos(radians(LONGITUDE) - radians(#{longitude})) +
+                              sin(radians(#{latitude})) * sin(radians(LATITUDE))))
+                            AS distance
+                 FROM LOCATION
+                 ORDER BY DISTANCE) LOCATION
+        WHERE LOCATION_NAME LIKE '%${region}%'
+           OR RELATED_LOCATION LIKE '%${region}%' LIMIT 0, 10
+    </select>
+
+</mapper>

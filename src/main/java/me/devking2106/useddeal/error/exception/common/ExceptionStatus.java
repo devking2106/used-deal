@@ -11,9 +11,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum ExceptionStatus {
 
+	// User
+	USER_NOT_FOUND_EXCEPTION(4001, "유저 검색 결과가 없습니다.", NOT_FOUND),
+	USER_SAVE_FAILED_EXCEPTION(4002, "회원가입을 실패했습니다.", BAD_REQUEST),
+	USER_DUPLICATE_USERID_EXCEPTION(4003, "중복된 아이디입니다.", BAD_REQUEST),
+
 	// Board
 	BOARD_NOT_FOUND_EXCEPTION(4101, "게시글이 존재하지 않습니다.", NOT_FOUND),
-	BOARD_SAVE_FAILED_EXCEPTION(4102, "게시글 저장에 실패 했습니다.", BAD_REQUEST),
+	BOARD_SAVE_FAILED_EXCEPTION(4102, "게시글 저장을 실패했습니다.", BAD_REQUEST),
 	BOARD_STATUS_HIDE_EXCEPTION(4103, "게시글이 숨김 상태거나 본인이 작성한 글이 아닙니다.", BAD_REQUEST),
 	BOARD_PULL_FAILED_EXCEPTION(4104, "끌어 올리기를 실패 했습니다. 게시글이 없거나 혹은 본인이 작성한 글이 아니거나 게시글 작성 경과일이 2일이 지나지 않았습니다.",
 		BAD_REQUEST),
@@ -25,7 +30,7 @@ public enum ExceptionStatus {
 	BOARD_LOCATION_RANGE_BOUNDS_EXCEPTION(4199, "게시글 지역 검색 범위가 벗어났습니다. 0~15 사이의 값을 입력해주세요.", BAD_REQUEST),
 
 	// Location
-	LOCATION_NOT_FOUND_EXCEPTION(4201, "일치하는 동네가 없습니다. 올바른 동네를 입력해주세요.", BAD_REQUEST),
+	LOCATION_NOT_FOUND_EXCEPTION(4201, "일치하는 동네가 없습니다. 올바른 동네를 입력해주세요.", NOT_FOUND),
 	LOCATION_NOT_MATCH_EXCEPTION(4202, "동네가 일치하지 않습니다. 글쓰기를 하려면 동네인증이 필요합니다.", BAD_REQUEST),
 
 	// Common

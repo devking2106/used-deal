@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import me.devking2106.useddeal.entity.Board;
+import me.devking2106.useddeal.entity.Location;
 
 @Builder
 @Getter
@@ -36,12 +37,12 @@ public class BoardSaveDto {
 	@NotBlank
 	private String locationName;
 
-	public Board toEntity(Long userId, String locationName, Long locationId, double latitude, double longitude) {
+	public Board toEntity(Long userId, Location location) {
 		LocalDateTime saveTime = LocalDateTime.now();
 		return Board.builder()
 			.userId(userId)
 			.locationName(locationName)
-			.locationId(locationId)
+			.locationId(location.getId())
 			.title(title)
 			.content(content)
 			.price(price)
@@ -51,9 +52,8 @@ public class BoardSaveDto {
 			.modDate(saveTime)
 			.boardDate(saveTime)
 			.isPull(false)
-			.latitude(latitude)
-			.longitude(longitude)
+			.latitude(location.getLatitude())
+			.longitude(location.getLongitude())
 			.build();
 	}
-
 }
