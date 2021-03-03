@@ -19,8 +19,8 @@ public class UserDetailDto {
 	private String locationName;
 	private String nickname;
 	private LocalDateTime regDate;
-	private Long saleCount;
-	private Long authCount;
+	private long saleCount;
+	private long authCount;
 
 	public static UserDetailDto userToDetailDto(User user) {
 		return UserDetailDto.builder()
