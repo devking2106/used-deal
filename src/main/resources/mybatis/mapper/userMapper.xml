@@ -3,16 +3,6 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="me.devking2106.useddeal.repository.mapper.UserMapper">
 
-    <resultMap id="UserDetailDto" type="me.devking2106.useddeal.dto.UserDetailDto">
-        <result property="id" column="id"/>
-        <result property="userId" column="user_id"/>
-        <result property="nickname" column="nickname"/>
-        <result property="locationName" column="location_name"/>
-        <result property="regDate" column="reg_date"/>
-        <result property="saleCount" column="sale_count"/>
-        <result property="authCount" column="auth_count"/>
-    </resultMap>
-
     <insert id="save" parameterType="me.devking2106.useddeal.entity.User" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO USER
         SET USER_ID = #{userId},

@@ -16,7 +16,6 @@ import me.devking2106.useddeal.entity.User;
 @AllArgsConstructor
 public class UserDetailDto {
 	private Long id;
-	private String userId;
 	private String locationName;
 	private String nickname;
 	private LocalDateTime regDate;
@@ -26,7 +25,6 @@ public class UserDetailDto {
 	public static UserDetailDto userToDetailDto(User user) {
 		return UserDetailDto.builder()
 			.id(user.getId())
-			.userId(user.getUserId())
 			.locationName(user.getLocationName())
 			.nickname(user.getNickname())
 			.regDate(user.getRegDate())
