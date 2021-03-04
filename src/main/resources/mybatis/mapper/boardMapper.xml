@@ -69,6 +69,7 @@
         </if>
         ORDER BY BOARD_DATE
     </select>
+
     <select id="findAll" resultType="me.devking2106.useddeal.dto.BoardFindDto">
         SELECT ID,
         TITLE,

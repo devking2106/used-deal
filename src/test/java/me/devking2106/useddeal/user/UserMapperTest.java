@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import me.devking2106.useddeal.common.utils.SHA256Util;
+import me.devking2106.useddeal.dto.LongitudeAndLatitude;
 import me.devking2106.useddeal.dto.UserFindDto;
 import me.devking2106.useddeal.entity.User;
 import me.devking2106.useddeal.repository.mapper.UserMapper;
@@ -38,6 +39,10 @@ public class UserMapperTest {
 	void saveUserTest() {
 		// given
 		LocalDateTime saveTime = LocalDateTime.now();
+		LongitudeAndLatitude longitudeAndLatitude = LongitudeAndLatitude.builder()
+			.latitude(37.587111)
+			.longitude(126.969069)
+			.build();
 		User user = User.builder()
 			.userId("testId")
 			.locationName("서울 종로구 청운동")
@@ -51,11 +56,7 @@ public class UserMapperTest {
 			.loginDate(saveTime)
 			.role(User.Role.USER)
 			.status(User.Status.ACTIVE)
-			.saleCount(0L)
-			.imagePath("C:/images/temp.jpg")
-			.latitude(37.587111)
-			.longitude(126.969069)
-			.authCount(0L)
+			.longitudeAndLatitude(longitudeAndLatitude)
 			.build();
 		int saveCount = userMapper.save(user);
 		// then
@@ -90,20 +91,19 @@ public class UserMapperTest {
 	}
 
 	@Test
-	@DisplayName("유저 로그인 - 성공")
+	@DisplayName("유저 로그인 - 비밀번호 일치할 때")
 	void loginFindByUserIdAndPasswordUserSuccessTest() {
 		// given
 		User result = userMapper.findByIdAndPassword("devking2106", SHA256Util.encodeSHA256("devkingpassword"));
-		System.out.println("result = " + result);
 		// then
 		assertNotNull(result);
 	}
 
 	@Test
-	@DisplayName("유저 로그인 - 실패")
-	void loginFindByUserIdAndPasswordUserFailedTest() {
+	@DisplayName("유저 로그인 - 비밀번호 일치 하지 않을때")
+	void loginFindByUserIdAndPasswordUserSuccessNotMatchPasswordTest() {
 		// given
-		User result = userMapper.findByIdAndPassword("devking2106", "devkingpassword1");
+		User result = userMapper.findByIdAndPassword("devking2106", SHA256Util.encodeSHA256("devkingpassword1"));
 		// then
 		assertNull(result);
 	}

@@ -19,8 +19,6 @@ public class UserDetailDto {
 	private String locationName;
 	private String nickname;
 	private LocalDateTime regDate;
-	private long saleCount;
-	private long authCount;
 
 	public static UserDetailDto userToDetailDto(User user) {
 		return UserDetailDto.builder()
@@ -28,8 +26,6 @@ public class UserDetailDto {
 			.locationName(user.getLocationName())
 			.nickname(user.getNickname())
 			.regDate(user.getRegDate())
-			.saleCount(user.getSaleCount())
-			.authCount(user.getAuthCount())
 			.build();
 	}
 }

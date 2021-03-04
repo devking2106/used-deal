@@ -2,13 +2,18 @@ package me.devking2106.useddeal.entity;
 
 import java.time.LocalDateTime;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
+import me.devking2106.useddeal.dto.LongitudeAndLatitude;
 
 @Getter
 @Builder
 @ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class User {
 
 	public enum Role {
@@ -19,22 +24,18 @@ public class User {
 		ACTIVE, DELETED
 	}
 
-	private final Long id;
-	private final String userId;
-	private final String locationName;
-	private final Long locationId;
-	private final String password;
-	private final String nickname;
-	private final String phone;
-	private final String email;
-	private final LocalDateTime regDate;
-	private final LocalDateTime modDate;
-	private final LocalDateTime loginDate;
-	private final Role role;
-	private final Status status;
-	private final Long saleCount;
-	private final String imagePath;
-	private final Double latitude;
-	private final Double longitude;
-	private final Long authCount;
+	private Long id;
+	private String userId;
+	private String locationName;
+	private Long locationId;
+	private String password;
+	private String nickname;
+	private String phone;
+	private String email;
+	private LocalDateTime regDate;
+	private LocalDateTime modDate;
+	private LocalDateTime loginDate;
+	private Role role;
+	private Status status;
+	private LongitudeAndLatitude longitudeAndLatitude;
 }

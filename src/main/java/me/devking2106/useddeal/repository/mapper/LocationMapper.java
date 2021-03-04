@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import me.devking2106.useddeal.dto.LocationFindDto;
+import me.devking2106.useddeal.dto.LongitudeAndLatitude;
 import me.devking2106.useddeal.entity.Location;
 
 @Mapper
@@ -14,6 +15,5 @@ public interface LocationMapper {
 	Location findByLocationName(String locationName);
 
 	List<LocationFindDto> findAll(@Param("region") String region,
-		@Param("latitude") double latitude,
-		@Param("longitude") double longitude);
+		@Param("longitudeAndLatitude") LongitudeAndLatitude longitudeAndLatitude);
 }

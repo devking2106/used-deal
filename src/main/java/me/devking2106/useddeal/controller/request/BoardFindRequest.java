@@ -12,7 +12,6 @@ import lombok.Setter;
 import lombok.ToString;
 import me.devking2106.useddeal.entity.Board;
 @Getter
-@Setter
 @Builder
 @ToString
 @AllArgsConstructor

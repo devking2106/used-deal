@@ -3,6 +3,26 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="me.devking2106.useddeal.repository.mapper.UserMapper">
 
+    <resultMap id="User" type="me.devking2106.useddeal.entity.User">
+        <id property="id" column="ID"/>
+        <result property="userId" column="USER_ID"/>
+        <result property="locationName" column="LOCATION_NAME"/>
+        <result property="locationId" column="LOCATION_ID"/>
+        <result property="password" column="PASSWORD"/>
+        <result property="nickname" column="NICKNAME"/>
+        <result property="phone" column="PHONE"/>
+        <result property="email" column="EMAIL"/>
+        <result property="regDate" column="REG_DATE"/>
+        <result property="modDate" column="MOD_DATE"/>
+        <result property="loginDate" column="LOGIN_DATE"/>
+        <result property="role" column="ROLE"/>
+        <result property="status" column="STATUS"/>
+        <association property="longitudeAndLatitude" javaType="me.devking2106.useddeal.dto.LongitudeAndLatitude">
+            <result property="latitude" column="LATITUDE"/>
+            <result property="longitude" column="LONGITUDE"/>
+        </association>
+    </resultMap>
+
     <insert id="save" parameterType="me.devking2106.useddeal.entity.User" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO USER
         SET USER_ID = #{userId},
@@ -17,14 +37,11 @@
             LOGIN_DATE = #{loginDate},
             ROLE = #{role},
             STATUS = #{status},
-            SALE_COUNT = #{saleCount},
-            IMAGE_PATH = #{imagePath},
-            LATITUDE = #{latitude},
-            LONGITUDE = #{longitude},
-            AUTH_COUNT = #{authCount}
+            LATITUDE = #{longitudeAndLatitude.latitude},
+            LONGITUDE = #{longitudeAndLatitude.longitude}
     </insert>
 
-    <select id="findById" resultType="me.devking2106.useddeal.entity.User">
+    <select id="findById" resultMap="User">
         SELECT *
         FROM USER
         WHERE id = #{id}
@@ -46,7 +63,7 @@
           AND status != 'DELETED'
     </select>
 
-    <select id="findByIdAndPassword" resultType="me.devking2106.useddeal.entity.User">
+    <select id="findByIdAndPassword" resultMap="User">
         SELECT *
         FROM USER
         WHERE USER_ID = #{id}

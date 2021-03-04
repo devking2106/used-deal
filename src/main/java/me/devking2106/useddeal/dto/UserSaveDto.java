@@ -41,6 +41,10 @@ public class UserSaveDto {
 
 	public User toEntity(Location location) {
 		LocalDateTime saveTime = LocalDateTime.now();
+		LongitudeAndLatitude longitudeAndLatitude = LongitudeAndLatitude.builder()
+			.latitude(location.getLatitude())
+			.longitude(location.getLongitude())
+			.build();
 		return User.builder()
 			.userId(userId)
 			.locationName(locationName)
@@ -54,11 +58,7 @@ public class UserSaveDto {
 			.loginDate(saveTime)
 			.role(User.Role.USER)
 			.status(User.Status.ACTIVE)
-			.saleCount(0L)
-			.imagePath("C:/images/temp.jpg")
-			.latitude(location.getLatitude())
-			.longitude(location.getLongitude())
-			.authCount(0L)
+			.longitudeAndLatitude(longitudeAndLatitude)
 			.build();
 	}
 }
