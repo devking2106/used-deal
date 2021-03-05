@@ -1,6 +1,7 @@
 package me.devking2106.useddeal.service;
 
 import static me.devking2106.useddeal.service.LocationService.*;
+import static me.devking2106.useddeal.service.UserService.*;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -17,8 +18,10 @@ import me.devking2106.useddeal.dto.BoardDetailDto;
 import me.devking2106.useddeal.dto.BoardFindDto;
 import me.devking2106.useddeal.dto.BoardModifyDto;
 import me.devking2106.useddeal.dto.BoardSaveDto;
+import me.devking2106.useddeal.dto.LongitudeAndLatitude;
 import me.devking2106.useddeal.entity.Board;
 import me.devking2106.useddeal.entity.Location;
+import me.devking2106.useddeal.entity.User;
 import me.devking2106.useddeal.error.exception.board.BoardDeleteFailedException;
 import me.devking2106.useddeal.error.exception.board.BoardNotFoundException;
 import me.devking2106.useddeal.error.exception.board.BoardNotMatchUserIdException;
@@ -31,6 +34,7 @@ import me.devking2106.useddeal.error.exception.board.BoardUpdateFailedException;
 import me.devking2106.useddeal.error.exception.location.TownNotMatchException;
 import me.devking2106.useddeal.repository.mapper.BoardMapper;
 import me.devking2106.useddeal.repository.mapper.LocationMapper;
+import me.devking2106.useddeal.repository.mapper.UserMapper;
 
 @Slf4j
 @Service
@@ -38,22 +42,19 @@ import me.devking2106.useddeal.repository.mapper.LocationMapper;
 public class BoardService {
 	private final BoardMapper boardMapper;
 	private final LocationMapper locationMapper;
+	private final UserMapper userMapper;
 
-	public Board register(BoardSaveDto boardSaveDto) {
+	public Board register(BoardSaveDto boardSaveDto, Long userId) {
 		// userId = 유저 id, locationName = 유저의 동네 , locationId = 동네 id, latitude = 위도, longitude = 경도
-		long userId = 1;
-		// 유저가 있는지 체크 userIsEmpty(userInfo);
-		String locationName = "서울 종로구 청운동".trim();
-		Long locationId = 1111010100L;
-		double latitude = 37.587111;
-		double longitude = 126.969069;
-
+		User userInfo = userMapper.findById(userId);
+		String locationName = boardSaveDto.getLocationName();
+		String userLocationName = userInfo.getLocationName();
 		// locationName 이 실제로 동네가 있는지 체크 후 있으면 등록 없으면 등록 안함
 		Location locationInfo = locationMapper.findByLocationName(locationName);
 		locationIsEmpty(locationInfo);
 		Board boardInfo = boardSaveDto.toEntity(userId, locationInfo);
 		// 유저의 동네와 저장하려는 동네가 일치하면 저장, 그렇지 않으면 저장 X
-		if (locationName.equals(boardInfo.getLocationName())) {
+		if (userLocationName.equals(boardInfo.getLocationName())) {
 			int saveResult = boardMapper.save(boardInfo);
 			if (saveResult != 1) {
 				throw new BoardSaveFailedException();
@@ -97,15 +98,29 @@ public class BoardService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<BoardFindDto> findAll(BoardFindRequest boardFindRequest) {
-		// 임시 boardFindRequest.range 범위 0~15 처리 추후 Location.Range 로 처리
-		// location 지역이 있는지 확인 후 없는 지역이면 예외 처리
-
-		// location = 서울 종로구 청운동, 위경도 값
-		double latitude = 37.587111;
-		double longitude = 126.969069;
-		return boardMapper.findAll(boardFindRequest, latitude, longitude);
+	public List<BoardFindDto> findAll(BoardFindRequest boardFindRequest, Long userId) {
+		if (boardFindRequest.getLocation() != null) {
+			String locationName = boardFindRequest.getLocation();
+			Location locationInfo = locationMapper.findByLocationName(locationName);
+			locationIsEmpty(locationInfo);
+			double latitude = locationInfo.getLatitude();
+			double longitude = locationInfo.getLongitude();
+			return boardMapper.findAll(boardFindRequest, latitude, longitude, null);
+		} else {
+			User userInfo = userMapper.findById(userId);
+			userIsEmpty(userInfo);
+			LongitudeAndLatitude longitudeAndLatitude = userInfo.getLongitudeAndLatitude();
+			double latitude = longitudeAndLatitude.getLatitude();
+			double longitude = longitudeAndLatitude.getLongitude();
+			return boardMapper.findAll(boardFindRequest, latitude, longitude, userInfo);
+		}
 	}
+
+	// @Transactional(readOnly = true)
+	// public List<BoardFindDto> findAll(BoardFindRequest boardFindRequest, Long userId) {
+	// 	User userInfo = userMapper.findById(userId);
+	// 	return boardMapper.findAll(boardFindRequest, userInfo);
+	// }
 
 	public void updatePull(Long id, Board.Status status, Long userId,
 		BoardDetailDto boardDetailDto, LocalDateTime updateTime) {
@@ -121,11 +136,10 @@ public class BoardService {
 		}
 	}
 
-	public void updateStatus(Long id, Board.Status status) {
+	public void updateStatus(Long id, Board.Status status, Long userId) {
 		BoardDetailDto boardDetailDto = boardMapper.findById(id);
 		boardIsEmpty(boardDetailDto);
-		long userId = 1;
-		if (userId != boardDetailDto.getUserId()) {
+		if (!userId.equals(boardDetailDto.getUserId())) {
 			throw new BoardNotMatchUserIdException();
 		}
 		if (!boardDetailDto.isStatusUpdatable(status)) {
@@ -146,11 +160,10 @@ public class BoardService {
 		}
 	}
 
-	public void updateBoard(Long id, BoardModifyDto boardModifyDto) {
+	public void updateBoard(Long id, BoardModifyDto boardModifyDto, Long userId) {
 		BoardDetailDto boardDetailDto = boardMapper.findById(id);
 		boardIsEmpty(boardDetailDto);
-		long userId = 1;
-		if (userId != boardDetailDto.getUserId()) {
+		if (!userId.equals(boardDetailDto.getUserId())) {
 			throw new BoardNotMatchUserIdException();
 		}
 		LocalDateTime updateTime = LocalDateTime.now();
@@ -160,11 +173,10 @@ public class BoardService {
 		}
 	}
 
-	public void deleteById(Long id) {
+	public void deleteById(Long id, Long userId) {
 		BoardDetailDto boardDetailDto = boardMapper.findById(id);
 		boardIsEmpty(boardDetailDto);
-		long userId = 1;
-		if (userId != boardDetailDto.getUserId()) {
+		if (!userId.equals(boardDetailDto.getUserId())) {
 			throw new BoardNotMatchUserIdException();
 		}
 		int deleteCount = boardMapper.deleteById(id);

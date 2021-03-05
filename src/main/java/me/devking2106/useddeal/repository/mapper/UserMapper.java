@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 import me.devking2106.useddeal.dto.UserDetailDto;
 import me.devking2106.useddeal.dto.UserFindDto;
+import me.devking2106.useddeal.entity.Location;
 import me.devking2106.useddeal.entity.User;
 
 @Mapper
@@ -21,4 +22,6 @@ public interface UserMapper {
 	List<UserFindDto> findByNickName(String nickname);
 
 	User findByIdAndPassword(@Param("id") String id, @Param("password") String password);
+
+	int updateLocation(@Param("location") Location location, @Param("userId") Long userId);
 }

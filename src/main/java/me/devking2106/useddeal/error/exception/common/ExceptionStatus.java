@@ -15,6 +15,7 @@ public enum ExceptionStatus {
 	USER_NOT_FOUND_EXCEPTION(4001, "유저 검색 결과가 없습니다.", NOT_FOUND),
 	USER_SAVE_FAILED_EXCEPTION(4002, "회원가입을 실패했습니다.", BAD_REQUEST),
 	USER_DUPLICATE_USERID_EXCEPTION(4003, "중복된 아이디입니다.", BAD_REQUEST),
+	USER_REGION_AUTH_FAILED_EXCEPTION(4004, "동네 인증을 실패했습니다.", BAD_REQUEST),
 
 	// Board
 	BOARD_NOT_FOUND_EXCEPTION(4101, "게시글이 존재하지 않습니다.", NOT_FOUND),
@@ -27,7 +28,7 @@ public enum ExceptionStatus {
 	BOARD_STATUS_FAILED_EXCEPTION(4107, "게시글 상태 변경을 실패했습니다.", BAD_REQUEST),
 	BOARD_UPDATE_FAILED_EXCEPTION(4108, "게시글 수정을 실패했습니다", BAD_REQUEST),
 	BOARD_DELETE_FAILED_EXCEPTION(4109, "게시글 삭제를 실패했습니다", BAD_REQUEST),
-	BOARD_LOCATION_RANGE_BOUNDS_EXCEPTION(4199, "게시글 지역 검색 범위가 벗어났습니다. 0~15 사이의 값을 입력해주세요.", BAD_REQUEST),
+	BOARD_LOCATION_RANGE_BOUNDS_EXCEPTION(4110, "게시글 지역 검색 범위가 벗어났습니다. 0~10 사이의 값을 입력해주세요.", BAD_REQUEST),
 
 	// Location
 	LOCATION_NOT_FOUND_EXCEPTION(4201, "일치하는 동네가 없습니다. 올바른 동네를 입력해주세요.", NOT_FOUND),

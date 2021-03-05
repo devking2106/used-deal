@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
 import lombok.RequiredArgsConstructor;
 import me.devking2106.useddeal.dto.LocationFindDto;
@@ -24,15 +25,14 @@ public class LocationController {
 	@ResponseStatus(HttpStatus.OK)
 	@GetMapping("/locations")
 	public List<LocationFindDto> findAll(
-		@RequestParam(value = "region", required = false) String region) {
-		return locationService.findAll(region);
+		@RequestParam(value = "region", required = false) String region, @SessionAttribute("ID") Long userId) {
+		return locationService.findAll(region, userId);
 	}
 
 	// 임시 동네 인증 핸들러
 	@ResponseStatus(HttpStatus.OK)
 	@GetMapping("/locations/region-auth/{locationName}")
-	public String findByLocationName(@PathVariable String locationName) {
-		String town = locationService.findByLocationName(locationName).getTown();
-		return town + " 동네 인증 성공";
+	public String regionAuth(@PathVariable String locationName, @SessionAttribute("ID") Long userId) {
+		return locationService.regionAuth(locationName, userId);
 	}
 }

@@ -25,6 +25,8 @@ import me.devking2106.useddeal.entity.User;
 public class UserSaveDto {
 
 	@NotBlank
+	@Size(min = 4, max = 20)
+	@Pattern(regexp = "^[a-zA-Z][a-zA-Z0-9_]{4,20}$")
 	private String userId;
 	@NotBlank
 	private String locationName;
@@ -33,6 +35,7 @@ public class UserSaveDto {
 	private String password;
 	@NotBlank
 	@Size(min = 2, max = 20)
+	@Pattern(regexp = "^[가-힣ㄱ-ㅎa-zA-Z0-9._ -]{2,20}$")
 	private String nickname;
 	@Pattern(regexp = "^01(?:0|1|[6-9])[.-]?(\\d{3}|\\d{4})[.-]?(\\d{4})$")
 	private String phone;

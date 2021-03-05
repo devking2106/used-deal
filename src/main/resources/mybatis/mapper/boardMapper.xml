@@ -70,6 +70,36 @@
         ORDER BY BOARD_DATE
     </select>
 
+<!--    <select id="findAll" resultType="me.devking2106.useddeal.dto.BoardFindDto">-->
+<!--        SELECT ID,-->
+<!--        TITLE,-->
+<!--        LOCATION_NAME,-->
+<!--        PRICE,-->
+<!--        CATEGORY_ID,-->
+<!--        STATUS,-->
+<!--        BOARD_DATE,-->
+<!--        IS_PULL-->
+<!--        <if test="boardFindRequest.range == 0">-->
+<!--            FROM BOARD-->
+<!--            WHERE LOCATION_NAME = #{boardFindRequest.location}-->
+<!--        </if>-->
+<!--        <if test="boardFindRequest.range != 0">-->
+<!--            FROM (SELECT *,-->
+<!--            (6371*acos(cos(radians(#{latitude}))*cos(radians(LATITUDE))*cos(radians(LONGITUDE)-radians(#{longitude}))+sin(radians(#{latitude}))*sin(radians(LATITUDE))))-->
+<!--            AS distance-->
+<!--            FROM BOARD) BOARD-->
+<!--            WHERE DISTANCE <![CDATA[<=]]> #{boardFindRequest.range}-->
+<!--        </if>-->
+<!--        AND STATUS != 'HIDE'-->
+<!--        <if test=' "TITLE".equalsIgnoreCase(boardFindRequest.filterType)'>-->
+<!--            AND TITLE LIKE '%${boardFindRequest.query}%'-->
+<!--        </if>-->
+<!--        <if test=' "CONTENT".equalsIgnoreCase(boardFindRequest.filterType)'>-->
+<!--            AND CONTENT LIKE '%${boardFindRequest.query}%'-->
+<!--        </if>-->
+<!--        ORDER BY BOARD_DATE-->
+<!--    </select>-->
+
     <select id="findAll" resultType="me.devking2106.useddeal.dto.BoardFindDto">
         SELECT ID,
         TITLE,
@@ -79,16 +109,31 @@
         STATUS,
         BOARD_DATE,
         IS_PULL
-        <if test="boardFindRequest.range == 0">
-            FROM BOARD
-            WHERE LOCATION_NAME = #{boardFindRequest.location}
+        <if test='user != null'>
+            <if test="boardFindRequest.range == 0">
+                FROM BOARD
+                WHERE LOCATION_NAME = #{user.locationName}
+            </if>
+            <if test="boardFindRequest.range != 0">
+                FROM (SELECT *,
+                (6371*acos(cos(radians(#{user.longitudeAndLatitude.latitude}))*cos(radians(LATITUDE))*cos(radians(LONGITUDE)-radians(#{user.longitudeAndLatitude.longitude}))+sin(radians(#{user.longitudeAndLatitude.latitude}))*sin(radians(LATITUDE))))
+                AS distance
+                FROM BOARD) BOARD
+                WHERE DISTANCE <![CDATA[<=]]> #{boardFindRequest.range}
+            </if>
         </if>
-        <if test="boardFindRequest.range != 0">
-            FROM (SELECT *,
-            (6371*acos(cos(radians(#{latitude}))*cos(radians(LATITUDE))*cos(radians(LONGITUDE)-radians(#{longitude}))+sin(radians(#{latitude}))*sin(radians(LATITUDE))))
-            AS distance
-            FROM BOARD) BOARD
-            WHERE DISTANCE <![CDATA[<=]]> #{boardFindRequest.range}
+        <if test='user == null'>
+            <if test="boardFindRequest.range == 0">
+                FROM BOARD
+                WHERE LOCATION_NAME = #{boardFindRequest.location}
+            </if>
+            <if test="boardFindRequest.range != 0">
+                FROM (SELECT *,
+                (6371*acos(cos(radians(#{latitude}))*cos(radians(LATITUDE))*cos(radians(LONGITUDE)-radians(#{longitude}))+sin(radians(#{latitude}))*sin(radians(LATITUDE))))
+                AS distance
+                FROM BOARD) BOARD
+                WHERE DISTANCE <![CDATA[<=]]> #{boardFindRequest.range}
+            </if>
         </if>
         AND STATUS != 'HIDE'
         <if test=' "TITLE".equalsIgnoreCase(boardFindRequest.filterType)'>
