@@ -54,8 +54,8 @@ public class BoardController {
 
 	@ResponseStatus(HttpStatus.OK)
 	@GetMapping("/users/{userId}/boards")
-	public List<BoardFindDto> findByUser(@PathVariable Long userId) {
-		return boardService.findByUser(userId);
+	public List<BoardFindDto> findByUser(@PathVariable Long userId, @SessionAttribute("ID") Long sessionUserId) {
+		return boardService.findByUser(userId, sessionUserId);
 	}
 
 	@ResponseStatus(HttpStatus.NO_CONTENT)

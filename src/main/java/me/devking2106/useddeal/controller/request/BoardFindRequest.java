@@ -1,15 +1,11 @@
 package me.devking2106.useddeal.controller.request;
 
-
-import javax.validation.constraints.NotBlank;
-
 import org.hibernate.validator.constraints.Range;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
 import me.devking2106.useddeal.entity.Board;

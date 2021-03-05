@@ -87,14 +87,12 @@ public class BoardService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<BoardFindDto> findByUser(Long userId) {
-		// userId 를 조회 후 있으면 조회하고 없으면 예외를 던져준다
-
-		// 내 userId를 가져온다
-		long userIdResult = 1;
-
-		// 내 정보면 숨김을 표시해주고 내 정보가 아니면 숨김 게시글을 제외한다
-		return boardMapper.findByUser(userId, userIdResult);
+	public List<BoardFindDto> findByUser(Long userId, Long sessionUserId) {
+		User userInfo = userMapper.findById(userId);
+		userIsEmpty(userInfo);
+		User sessionUserInfo = userMapper.findById(sessionUserId);
+		long sessionUserInfoId = sessionUserInfo.getId();
+		return boardMapper.findByUser(userId, sessionUserInfoId);
 	}
 
 	@Transactional(readOnly = true)
@@ -115,12 +113,6 @@ public class BoardService {
 			return boardMapper.findAll(boardFindRequest, latitude, longitude, userInfo);
 		}
 	}
-
-	// @Transactional(readOnly = true)
-	// public List<BoardFindDto> findAll(BoardFindRequest boardFindRequest, Long userId) {
-	// 	User userInfo = userMapper.findById(userId);
-	// 	return boardMapper.findAll(boardFindRequest, userInfo);
-	// }
 
 	public void updatePull(Long id, Board.Status status, Long userId,
 		BoardDetailDto boardDetailDto, LocalDateTime updateTime) {
