@@ -95,9 +95,7 @@ public class BoardService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<BoardFindDto> findAll(BoardFindRequest boardFindRequest, Long userId) {
-		User userInfo = userMapper.findById(userId);
-		userIsEmpty(userInfo);
+	public List<BoardFindDto> findAll(BoardFindRequest boardFindRequest) {
 		String locationName = boardFindRequest.getLocation();
 		Location locationInfo = locationMapper.findByLocationName(locationName);
 		locationIsEmpty(locationInfo);

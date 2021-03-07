@@ -49,7 +49,7 @@ public class BoardController {
 	@ResponseStatus(HttpStatus.OK)
 	@GetMapping("/boards")
 	public List<BoardFindDto> findAll(@Valid BoardFindRequest boardFindRequest, @SessionAttribute(value = "ID") Long userId) {
-		return boardService.findAll(boardFindRequest, userId);
+		return boardService.findAll(boardFindRequest);
 	}
 
 	@ResponseStatus(HttpStatus.OK)
