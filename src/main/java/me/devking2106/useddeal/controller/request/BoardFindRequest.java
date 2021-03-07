@@ -1,5 +1,7 @@
 package me.devking2106.useddeal.controller.request;
 
+import javax.validation.constraints.NotBlank;
+
 import org.hibernate.validator.constraints.Range;
 
 import lombok.AllArgsConstructor;
@@ -21,6 +23,7 @@ public class BoardFindRequest {
 
 	private String query;
 
+	@NotBlank
 	private String location;
 
 	@Range(min = 0, max = 10)

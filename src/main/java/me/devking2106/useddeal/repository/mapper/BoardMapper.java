@@ -23,7 +23,7 @@ public interface BoardMapper {
 	List<BoardFindDto> findByUser(@Param("userId") Long userId, @Param("userIdResult") Long userIdResult);
 
 	List<BoardFindDto> findAll(@Param("boardFindRequest") BoardFindRequest boardFindRequest,
-		@Param("latitude") double latitude, @Param("longitude") double longitude, @Param("user") User user);
+		@Param("latitude") double latitude, @Param("longitude") double longitude);
 
 	int updateStatus(@Param("id") Long id, @Param("userId") Long userId, @Param("status") Board.Status status,
 		@Param("updateTime") LocalDateTime updateTime);

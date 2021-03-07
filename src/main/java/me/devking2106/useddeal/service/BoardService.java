@@ -47,6 +47,7 @@ public class BoardService {
 	public Board register(BoardSaveDto boardSaveDto, Long userId) {
 		// userId = 유저 id, locationName = 유저의 동네 , locationId = 동네 id, latitude = 위도, longitude = 경도
 		User userInfo = userMapper.findById(userId);
+		userIsEmpty(userInfo);
 		String locationName = boardSaveDto.getLocationName();
 		String userLocationName = userInfo.getLocationName();
 		// locationName 이 실제로 동네가 있는지 체크 후 있으면 등록 없으면 등록 안함
@@ -90,28 +91,19 @@ public class BoardService {
 	public List<BoardFindDto> findByUser(Long userId, Long sessionUserId) {
 		User userInfo = userMapper.findById(userId);
 		userIsEmpty(userInfo);
-		User sessionUserInfo = userMapper.findById(sessionUserId);
-		long sessionUserInfoId = sessionUserInfo.getId();
-		return boardMapper.findByUser(userId, sessionUserInfoId);
+		return boardMapper.findByUser(userId, sessionUserId);
 	}
 
 	@Transactional(readOnly = true)
 	public List<BoardFindDto> findAll(BoardFindRequest boardFindRequest, Long userId) {
-		if (boardFindRequest.getLocation() != null) {
-			String locationName = boardFindRequest.getLocation();
-			Location locationInfo = locationMapper.findByLocationName(locationName);
-			locationIsEmpty(locationInfo);
-			double latitude = locationInfo.getLatitude();
-			double longitude = locationInfo.getLongitude();
-			return boardMapper.findAll(boardFindRequest, latitude, longitude, null);
-		} else {
-			User userInfo = userMapper.findById(userId);
-			userIsEmpty(userInfo);
-			LongitudeAndLatitude longitudeAndLatitude = userInfo.getLongitudeAndLatitude();
-			double latitude = longitudeAndLatitude.getLatitude();
-			double longitude = longitudeAndLatitude.getLongitude();
-			return boardMapper.findAll(boardFindRequest, latitude, longitude, userInfo);
-		}
+		User userInfo = userMapper.findById(userId);
+		userIsEmpty(userInfo);
+		String locationName = boardFindRequest.getLocation();
+		Location locationInfo = locationMapper.findByLocationName(locationName);
+		locationIsEmpty(locationInfo);
+		double latitude = locationInfo.getLatitude();
+		double longitude = locationInfo.getLongitude();
+		return boardMapper.findAll(boardFindRequest, latitude, longitude);
 	}
 
 	public void updatePull(Long id, Board.Status status, Long userId,
