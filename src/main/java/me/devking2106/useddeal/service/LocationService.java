@@ -8,18 +8,24 @@ import org.springframework.util.ObjectUtils;
 
 import lombok.RequiredArgsConstructor;
 import me.devking2106.useddeal.dto.LocationFindDto;
+import me.devking2106.useddeal.dto.LongitudeAndLatitude;
+import me.devking2106.useddeal.dto.UserDetailDto;
 import me.devking2106.useddeal.entity.Location;
+import me.devking2106.useddeal.entity.User;
 import me.devking2106.useddeal.error.exception.location.LocationNotFoundException;
+import me.devking2106.useddeal.error.exception.user.UserRegionAuthFailedException;
 import me.devking2106.useddeal.repository.mapper.LocationMapper;
+import me.devking2106.useddeal.repository.mapper.UserMapper;
 
 @Service
 @RequiredArgsConstructor
 public class LocationService {
 
 	private final LocationMapper locationMapper;
+	private final UserMapper userMapper;
 
-	public static void locationIsEmpty(Object locations) {
-		if (ObjectUtils.isEmpty(locations)) {
+	public static void locationIsEmpty(Location location) {
+		if (ObjectUtils.isEmpty(location)) {
 			throw new LocationNotFoundException();
 		}
 	}
@@ -32,11 +38,18 @@ public class LocationService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<LocationFindDto> findAll(String region) {
+	public List<LocationFindDto> findAll(String region, Long userId) {
 		// 현재 내 위치의 위도 경도
-		double latitude = 37.587111;
-		double longitude = 126.969069;
+		User userInfo = userMapper.findById(userId);
+		return locationMapper.findAll(region, userInfo.getLongitudeAndLatitude());
+	}
 
-		return locationMapper.findAll(region, latitude, longitude);
+	public String regionAuth(String locationName, Long userId) {
+		Location locationInfo = findByLocationName(locationName);
+		int updateCount = userMapper.updateLocation(locationInfo, userId);
+		if (updateCount < 1) {
+			throw new UserRegionAuthFailedException();
+		}
+		return locationInfo.getTown() + " 동네 인증 성공";
 	}
 }

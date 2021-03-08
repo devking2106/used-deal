@@ -34,7 +34,8 @@ public class LocationTest {
 	@DisplayName("동네 조회 테스트 - 동네 조회 - 성공")
 	void findSuccessByLocation() throws Exception {
 		mockMvc.perform(get("/api/locations")
-			.queryParam("region", "서울 종로구 청운동"))
+			.queryParam("region", "서울 종로구 청운동")
+			.sessionAttr("ID", 1L))
 			.andDo(print())
 			.andExpect(status().isOk());
 	}
@@ -42,7 +43,8 @@ public class LocationTest {
 	@Test
 	@DisplayName("동네 조회 테스트 - 동네 미조회 - 성공")
 	void findSuccessNoLocation() throws Exception {
-		mockMvc.perform(get("/api/locations"))
+		mockMvc.perform(get("/api/locations")
+			.sessionAttr("ID", 1L))
 			.andDo(print())
 			.andExpect(status().isOk());
 	}
@@ -51,7 +53,8 @@ public class LocationTest {
 	@DisplayName("동네 조회 테스트 - 없는 동네 조회 - 성공(데이터0개)")
 	void findSuccessNotByLocation() throws Exception {
 		mockMvc.perform(get("/api/locations")
-			.queryParam("region", "서울 종로구 청운1동"))
+			.queryParam("region", "서울 종로구 청운1동")
+			.sessionAttr("ID", 1L))
 			.andDo(print())
 			.andExpect(status().isOk())
 			.andExpect(content().string("[]"));

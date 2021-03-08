@@ -40,6 +40,14 @@
             LATITUDE = #{longitudeAndLatitude.latitude},
             LONGITUDE = #{longitudeAndLatitude.longitude}
     </insert>
+    <update id="updateLocation" keyProperty="id">
+        UPDATE USER
+        SET LOCATION_NAME = #{location.locationName},
+            LOCATION_ID = #{location.id},
+            LATITUDE = #{location.latitude},
+            LONGITUDE = #{location.longitude}
+        WHERE ID = #{userId}
+    </update>
 
     <select id="findById" resultMap="User">
         SELECT *

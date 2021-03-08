@@ -22,6 +22,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -79,6 +80,7 @@ class BoardTest {
 			.categoryId(1L)
 			.build();
 		mockMvc.perform(post("/api/boards")
+			.sessionAttr("ID", 1L)
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(objectMapper.writeValueAsString(boardSaveDto)))
 			.andDo(print())
@@ -104,6 +106,7 @@ class BoardTest {
 			.categoryId(1L)
 			.build();
 		mockMvc.perform(post("/api/boards")
+			.sessionAttr("ID", 1L)
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(objectMapper.writeValueAsString(boardSaveDto)))
 			.andDo(print())
@@ -123,6 +126,7 @@ class BoardTest {
 			.categoryId(1L)
 			.build();
 		mockMvc.perform(post("/api/boards")
+			.sessionAttr("ID", 1L)
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(objectMapper.writeValueAsString(boardSaveDto)))
 			.andDo(print())
@@ -143,6 +147,7 @@ class BoardTest {
 			.categoryId(1L)
 			.build();
 		mockMvc.perform(post("/api/boards")
+			.sessionAttr("ID", 1L)
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(objectMapper.writeValueAsString(boardSaveDto)))
 			.andDo(print())
@@ -162,6 +167,7 @@ class BoardTest {
 			.categoryId(1L)
 			.build();
 		mockMvc.perform(post("/api/boards")
+			.sessionAttr("ID", 1L)
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(objectMapper.writeValueAsString(boardSaveDto)))
 			.andDo(print())
@@ -217,6 +223,7 @@ class BoardTest {
 			.categoryId(1L)
 			.build();
 		mockMvc.perform(post("/api/boards")
+			.sessionAttr("ID", 1L)
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(objectMapper.writeValueAsString(boardSaveDto)))
 			.andDo(print())
@@ -234,6 +241,7 @@ class BoardTest {
 		boardMap.put("categoryId", "1");
 		mockMvc.perform(post("/api/boards")
 			.contentType(MediaType.APPLICATION_JSON)
+			.sessionAttr("ID", 1L)
 			.content(objectMapper.writeValueAsString(boardMap)))
 			.andDo(print())
 			.andExpect(status().isCreated());
@@ -243,6 +251,7 @@ class BoardTest {
 	@DisplayName("게시글 전체 조회 테스트 - 성공")
 	void findSuccessBoardByAll() throws Exception {
 		mockMvc.perform(get("/api/boards")
+			.sessionAttr("ID", 1L)
 			.queryParam("location", "서울 종로구 청운동"))
 			.andDo(print())
 			.andExpect(status().isOk());
@@ -252,6 +261,7 @@ class BoardTest {
 	@DisplayName("게시글 전체 조회 테스트 - 제목 입력 - 성공")
 	void findSuccessBoardByTitleAll() throws Exception {
 		mockMvc.perform(get("/api/boards")
+			.sessionAttr("ID", 1L)
 			.queryParam("location", "서울 종로구 청운동")
 			.param("TITLE", "테스트"))
 			.andDo(print())
@@ -262,6 +272,7 @@ class BoardTest {
 	@DisplayName("게시글 전체 조회 테스트 - 내용 입력 - 성공")
 	void findSuccessBoardByContentAll() throws Exception {
 		mockMvc.perform(get("/api/boards")
+			.sessionAttr("ID", 1L)
 			.queryParam("location", "서울 종로구 청운동")
 			.param("CONTENT", "테스트"))
 			.andDo(print())
@@ -272,6 +283,7 @@ class BoardTest {
 	@DisplayName("게시글 전체 조회 테스트 - 제목 공백 입력 - findAll 로 조회- 성공")
 	void findSuccessBoardByNoTitleAndNoContentAll() throws Exception {
 		mockMvc.perform(get("/api/boards")
+			.sessionAttr("ID", 1L)
 			.queryParam("location", "서울 종로구 청운동")
 			.queryParam("TITLE", "  "))
 			.andDo(print())
@@ -323,6 +335,7 @@ class BoardTest {
 	@DisplayName("게시글 지역이름으로 조회 - 지역 입력 - 성공")
 	void findSuccessByLocationName() throws Exception {
 		mockMvc.perform(get("/api/boards")
+			.sessionAttr("ID", 1L)
 			.queryParam("location", "서울 종로구 청운동"))
 			.andDo(print())
 			.andExpect(status().isOk());
@@ -337,21 +350,21 @@ class BoardTest {
 	@DisplayName("게시글 지역이름으로 조회 - 지역, 범위 입력 - 성공")
 	void findSuccessByLocationNameAndRange() throws Exception {
 		mockMvc.perform(get("/api/boards")
+			.sessionAttr("ID", 1L)
 			.queryParam("location", "서울 종로구 청운동")
-			.queryParam("range", "15"))
+			.queryParam("range", "10"))
 			.andDo(print())
 			.andExpect(status().isOk());
 	}
 
 	@Test
-	@DisplayName("게시글 지역이름으로 조회 - 지역, 범위 미입력 - 실패")
+	@DisplayName("게시글 지역이름으로 조회 - 지역, 범위 미입력 - 성공")
 	void findFailureByLocationNameAndRange() throws Exception {
-		mockMvc.perform(get("/api/boards"))
+		mockMvc.perform(get("/api/boards")
+			.sessionAttr("ID", 1L))
 			.andDo(print())
-			.andExpect(status().isBadRequest())
-			.andExpect(
-				result -> assertTrue(Objects.requireNonNull(result.getResolvedException()).getClass().isAssignableFrom(
-					BindException.class)));
+			.andExpect(status().isOk())
+			;
 	}
 
 	@Test
@@ -374,39 +387,43 @@ class BoardTest {
 	@DisplayName("게시글 상태 변경 - SALE_COMPLETED - 성공")
 	void updateByStatusSaleCompleted() throws Exception {
 		mockMvc.perform(patch("/api/boards/1/status")
+			.sessionAttr("ID", 1L)
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(objectMapper.writeValueAsString("SALE_COMPLETED")))
 			.andDo(print())
 			.andExpect(status().isNoContent());
 	}
 
-	@Order(1)
+	@Order(10)
 	@Test
 	@DisplayName("게시글 상태 변경 - HIDE - 성공")
 	void updateByStatusHide() throws Exception {
 		mockMvc.perform(patch("/api/boards/1/status")
+			.sessionAttr("ID", 1L)
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(objectMapper.writeValueAsString("HIDE")))
 			.andDo(print())
 			.andExpect(status().isNoContent());
 	}
 
-	@Order(3)
+	@Order(30)
 	@Test
 	@DisplayName("게시글 상태 변경 - PULL - 성공")
 	void updateByStatusPull() throws Exception {
 		mockMvc.perform(patch("/api/boards/2/status")
+			.sessionAttr("ID", 1L)
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(objectMapper.writeValueAsString("PULL")))
 			.andDo(print())
 			.andExpect(status().isNoContent());
 	}
 
-	@Order(4)
+	@Order(40)
 	@Test
 	@DisplayName("게시글 상태 변경 - PULL (게시일 2일 이내)- 실패")
 	void updateFailureByStatusPull() throws Exception {
 		mockMvc.perform(patch("/api/boards/1/status")
+			.sessionAttr("ID", 1L)
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(objectMapper.writeValueAsString("PULL")))
 			.andDo(print())
@@ -416,7 +433,7 @@ class BoardTest {
 					BoardTimeStampException.class)));
 	}
 
-	@Order(5)
+	@Order(50)
 	@Test
 	@DisplayName("게시글 수정 - 성공")
 	void updateBoard() throws Exception {
@@ -427,6 +444,7 @@ class BoardTest {
 			.categoryId(1L)
 			.build();
 		mockMvc.perform(put("/api/boards/1")
+			.sessionAttr("ID", 1L)
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(objectMapper.writeValueAsString(boardModifyDto)))
 			.andDo(print())
@@ -435,11 +453,12 @@ class BoardTest {
 
 	/*====================================================삭제===========================================*/
 
-	@Order(6)
+	@Order(60)
 	@Test
 	@DisplayName("게시글 삭제 - 성공")
 	void deleteBoard() throws Exception {
-		mockMvc.perform(delete("/api/boards/2"))
+		mockMvc.perform(delete("/api/boards/2")
+			.sessionAttr("ID", 1L))
 			.andDo(print())
 			.andExpect(status().isNoContent());
 	}
