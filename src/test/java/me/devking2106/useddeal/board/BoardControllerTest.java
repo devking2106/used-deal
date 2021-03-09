@@ -29,6 +29,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import me.devking2106.useddeal.dto.BoardModifyDto;
 import me.devking2106.useddeal.dto.BoardSaveDto;
+import me.devking2106.useddeal.dto.DateInfo;
+import me.devking2106.useddeal.dto.Geographic;
 import me.devking2106.useddeal.entity.Board;
 import me.devking2106.useddeal.error.exception.board.BoardNotFoundException;
 import me.devking2106.useddeal.error.exception.board.BoardTimeStampException;
@@ -36,20 +38,26 @@ import me.devking2106.useddeal.error.exception.board.BoardTimeStampException;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("local")
-class BoardTest {
+class BoardControllerTest {
 
 	@Autowired
 	MockMvc mockMvc;
 	@Autowired
 	ObjectMapper objectMapper;
 
-	private Board board;
-
-	final LocalDateTime saveTime = LocalDateTime.now();
-
 	@BeforeEach
 	void initBoard() {
-		board = Board.builder()
+		final LocalDateTime saveTime = LocalDateTime.now();
+		DateInfo dateInfo = DateInfo.builder()
+			.boardDate(saveTime)
+			.regDate(saveTime)
+			.modDate(saveTime)
+			.build();
+		Geographic geographic = Geographic.builder()
+			.latitude(37.587111)
+			.longitude(126.969069)
+			.build();
+		Board board = Board.builder()
 			.id(1L)
 			.userId(1L)
 			.locationId(1111010100L)
@@ -59,50 +67,17 @@ class BoardTest {
 			.price(1_000_000L)
 			.categoryId(1L)
 			.status(Board.Status.SALE)
-			.regDate(saveTime)
-			.modDate(saveTime)
-			.boardDate(saveTime)
+			.dateInfo(dateInfo)
 			.isPull(true)
-			.latitude(37.587111)
-			.longitude(126.969069)
+			.geographic(geographic)
 			.build();
 	}
-
-	@Test
-	@DisplayName("게시글 생성 테스트 - 유저의 위치와 게시글 작성 동네가 같을때 - 성공")
-	void createSuccessBoard() throws Exception {
-		// 유저의 위치는 서울 종로구 청운동
-		BoardSaveDto boardSaveDto = BoardSaveDto.builder()
-			.title("제목 청운동")
-			.content("내용 청운동")
-			.price(1_000_000L)
-			.locationName("서울 종로구 청운동")
-			.categoryId(1L)
-			.build();
-		mockMvc.perform(post("/api/boards")
-			.sessionAttr("ID", 1L)
-			.contentType(MediaType.APPLICATION_JSON)
-			.content(objectMapper.writeValueAsString(boardSaveDto)))
-			.andDo(print())
-			.andExpect(status().isCreated());
-	}
-
-	/**
-	 * 게시글 생성 테스트 - 유저의 위치와 게시글 작성 동네가 다를때 - 실패
-	 * 추가
-	 */
-
-	/**
-	 * 게시글 생성 테스트 - 동네 이름이 없는 데이터 일때 - 실패
-	 * 추가
-	 */
 
 	@Test
 	@DisplayName("게시글 생성 테스트 - 제목, 내용 미입력 - 실패")
 	void createFailureBoardNoTitleNoContent() throws Exception {
 		BoardSaveDto boardSaveDto = BoardSaveDto.builder()
 			.price(1_000_000L)
-			.locationName("서울 종로구 청운동")
 			.categoryId(1L)
 			.build();
 		mockMvc.perform(post("/api/boards")
@@ -122,7 +97,6 @@ class BoardTest {
 		BoardSaveDto boardSaveDto = BoardSaveDto.builder()
 			.content("내용 청운동")
 			.price(1_000_000L)
-			.locationName("서울 종로구 청운동")
 			.categoryId(1L)
 			.build();
 		mockMvc.perform(post("/api/boards")
@@ -143,7 +117,6 @@ class BoardTest {
 			.title("제목 청운동")
 			.content("  ")
 			.price(1_000_000L)
-			.locationName("서울 종로구 청운동")
 			.categoryId(1L)
 			.build();
 		mockMvc.perform(post("/api/boards")
@@ -163,7 +136,6 @@ class BoardTest {
 		BoardSaveDto boardSaveDto = BoardSaveDto.builder()
 			.title("제목 청운동")
 			.content("내용 청운동")
-			.locationName("서울 종로구 청운동")
 			.categoryId(1L)
 			.build();
 		mockMvc.perform(post("/api/boards")
@@ -200,7 +172,6 @@ class BoardTest {
 		boardMap.put("title", "제목 청운동");
 		boardMap.put("content", "내용 청운동");
 		boardMap.put("price", "20000");
-		boardMap.put("locationName", "서울 종로구 청운동");
 		boardMap.put("categoryId", "1a");
 		mockMvc.perform(post("/api/boards")
 			.contentType(MediaType.APPLICATION_JSON)
@@ -210,41 +181,6 @@ class BoardTest {
 			.andExpect(
 				result -> assertTrue(Objects.requireNonNull(result.getResolvedException()).getClass().isAssignableFrom(
 					HttpMessageNotReadableException.class)));
-	}
-
-	@Test
-	@DisplayName("게시글 생성 테스트 - 가격 제안 여부 미입력 - 성공")
-	void createSuccessBoardNoIsPriceSuggest() throws Exception {
-		BoardSaveDto boardSaveDto = BoardSaveDto.builder()
-			.title("제목 청운동")
-			.content("내용 청운동")
-			.price(1_000_000L)
-			.locationName("서울 종로구 청운동")
-			.categoryId(1L)
-			.build();
-		mockMvc.perform(post("/api/boards")
-			.sessionAttr("ID", 1L)
-			.contentType(MediaType.APPLICATION_JSON)
-			.content(objectMapper.writeValueAsString(boardSaveDto)))
-			.andDo(print())
-			.andExpect(status().isCreated());
-	}
-
-	@Test
-	@DisplayName("게시글 생성 테스트 - 가격 제안 여부 입력 - 성공")
-	void createSuccessBoardIsPriceSuggestNumber() throws Exception {
-		HashMap<String, String> boardMap = new HashMap<>();
-		boardMap.put("title", "제목 청운동");
-		boardMap.put("content", "내용 청운동");
-		boardMap.put("price", "20000");
-		boardMap.put("locationName", "서울 종로구 청운동");
-		boardMap.put("categoryId", "1");
-		mockMvc.perform(post("/api/boards")
-			.contentType(MediaType.APPLICATION_JSON)
-			.sessionAttr("ID", 1L)
-			.content(objectMapper.writeValueAsString(boardMap)))
-			.andDo(print())
-			.andExpect(status().isCreated());
 	}
 
 	@Test
@@ -363,8 +299,7 @@ class BoardTest {
 		mockMvc.perform(get("/api/boards")
 			.sessionAttr("ID", 1L))
 			.andDo(print())
-			.andExpect(status().isOk())
-			;
+			.andExpect(status().isOk());
 	}
 
 	@Test

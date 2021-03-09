@@ -12,6 +12,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import me.devking2106.useddeal.dto.DateInfo;
+import me.devking2106.useddeal.dto.Geographic;
 import me.devking2106.useddeal.entity.Board;
 import me.devking2106.useddeal.repository.mapper.BoardMapper;
 
@@ -27,6 +29,15 @@ class BoardServiceTest {
 	void initBoard() {
 		//given
 		final LocalDateTime saveTime = LocalDateTime.now();
+		DateInfo dateInfo = DateInfo.builder()
+			.regDate(saveTime)
+			.modDate(saveTime)
+			.boardDate(saveTime)
+			.build();
+		Geographic geographic = Geographic.builder()
+			.latitude(37.587111)
+			.longitude(126.969069)
+			.build();
 		board = Board.builder()
 			.userId(1L)
 			.locationId(1111010100L)
@@ -36,12 +47,9 @@ class BoardServiceTest {
 			.price(1_000_000L)
 			.categoryId(1L)
 			.status(Board.Status.SALE)
-			.regDate(saveTime)
-			.modDate(saveTime)
-			.boardDate(saveTime)
+			.dateInfo(dateInfo)
 			.isPull(false)
-			.latitude(37.587111)
-			.longitude(126.969069)
+			.geographic(geographic)
 			.build();
 
 		failedBoard = Board.builder().build();

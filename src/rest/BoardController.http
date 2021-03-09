@@ -1,3 +1,13 @@
+### 로그인
+POST {{apiUrl}}/users/login
+Content-Type: application/json
+Accept: application/json
+
+{
+  "id": "{{id}}",
+  "password": "{{password}}"
+}
+
 ### 게시글 저장
 POST http://localhost:8080/api/boards
 Content-Type: application/json
@@ -7,8 +17,6 @@ Accept: application/json
   "title": "제목 청운동",
   "content": "내용 청운동",
   "price": "30000",
-  "locationName": "서울 종로구 청운동",
-  "priceSuggest": "true",
   "categoryId": "3"
 }
 

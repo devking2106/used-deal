@@ -1,14 +1,19 @@
 package me.devking2106.useddeal.entity;
 
-import java.time.LocalDateTime;
-
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
+import me.devking2106.useddeal.dto.DateInfo;
+import me.devking2106.useddeal.dto.Geographic;
 
 @Getter
 @Builder
 @ToString
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Board {
 
 	public enum Status {
@@ -19,20 +24,20 @@ public class Board {
 		TITLE, CONTENT, TITLE_OR_CONTENT
 	}
 
-	private final Long id;
-	private final Long userId;
-	private final Long locationId;
-	private final String locationName;
-	private final String title;
-	private final String content;
-	private final Long price;
-	private final Long categoryId;
-	private final Board.Status status;
-	private final LocalDateTime regDate;
-	private final LocalDateTime modDate;
-	private final LocalDateTime boardDate;
-	private final boolean isPull;
-	private final Double latitude;
-	private final Double longitude;
+	private Long id;
+	private Long userId;
+	private Long locationId;
+	private String locationName;
+	private String title;
+	private String content;
+	private Long price;
+	private Long categoryId;
+	private Board.Status status;
+	private boolean isPull;
+	private DateInfo dateInfo;
+	private Geographic geographic;
 
+	public boolean isMatchLocationName(User user) {
+		return this.locationName.equals(user.getLocationName());
+	}
 }

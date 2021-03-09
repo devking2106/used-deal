@@ -7,7 +7,6 @@ import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,8 +35,8 @@ public class BoardController {
 
 	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping("/boards")
-	public Board register(@Valid @RequestBody BoardSaveDto boardSaveDto, @SessionAttribute("ID") Long userId) {
-		return boardService.register(boardSaveDto, userId);
+	public void register(@Valid @RequestBody BoardSaveDto boardSaveDto, @SessionAttribute("ID") Long userId) {
+		boardService.register(boardSaveDto, userId);
 	}
 
 	@ResponseStatus(HttpStatus.OK)
@@ -49,7 +48,7 @@ public class BoardController {
 	@ResponseStatus(HttpStatus.OK)
 	@GetMapping("/boards")
 	public List<BoardFindDto> findAll(@Valid BoardFindRequest boardFindRequest, @SessionAttribute(value = "ID") Long userId) {
-		return boardService.findAll(boardFindRequest);
+		return boardService.findAll(boardFindRequest); // Read 때 처리
 	}
 
 	@ResponseStatus(HttpStatus.OK)

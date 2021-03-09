@@ -1,6 +1,6 @@
 package me.devking2106.useddeal.service;
 
-import static me.devking2106.useddeal.service.LocationService.*;
+import static me.devking2106.useddeal.common.utils.CustomUtil.*;
 import static me.devking2106.useddeal.service.UserService.*;
 
 import java.time.Duration;
@@ -9,7 +9,6 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ObjectUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,12 +17,10 @@ import me.devking2106.useddeal.dto.BoardDetailDto;
 import me.devking2106.useddeal.dto.BoardFindDto;
 import me.devking2106.useddeal.dto.BoardModifyDto;
 import me.devking2106.useddeal.dto.BoardSaveDto;
-import me.devking2106.useddeal.dto.LongitudeAndLatitude;
 import me.devking2106.useddeal.entity.Board;
 import me.devking2106.useddeal.entity.Location;
 import me.devking2106.useddeal.entity.User;
 import me.devking2106.useddeal.error.exception.board.BoardDeleteFailedException;
-import me.devking2106.useddeal.error.exception.board.BoardNotFoundException;
 import me.devking2106.useddeal.error.exception.board.BoardNotMatchUserIdException;
 import me.devking2106.useddeal.error.exception.board.BoardPullFailedException;
 import me.devking2106.useddeal.error.exception.board.BoardSaveFailedException;
@@ -31,7 +28,6 @@ import me.devking2106.useddeal.error.exception.board.BoardStatusFailedException;
 import me.devking2106.useddeal.error.exception.board.BoardStatusHideException;
 import me.devking2106.useddeal.error.exception.board.BoardTimeStampException;
 import me.devking2106.useddeal.error.exception.board.BoardUpdateFailedException;
-import me.devking2106.useddeal.error.exception.location.TownNotMatchException;
 import me.devking2106.useddeal.repository.mapper.BoardMapper;
 import me.devking2106.useddeal.repository.mapper.LocationMapper;
 import me.devking2106.useddeal.repository.mapper.UserMapper;
@@ -44,33 +40,13 @@ public class BoardService {
 	private final LocationMapper locationMapper;
 	private final UserMapper userMapper;
 
-	public Board register(BoardSaveDto boardSaveDto, Long userId) {
-		// userId = 유저 id, locationName = 유저의 동네 , locationId = 동네 id, latitude = 위도, longitude = 경도
+	public void register(BoardSaveDto boardSaveDto, Long userId) {
 		User userInfo = userMapper.findById(userId);
 		userIsEmpty(userInfo);
-		String locationName = boardSaveDto.getLocationName();
-		String userLocationName = userInfo.getLocationName();
-		// locationName 이 실제로 동네가 있는지 체크 후 있으면 등록 없으면 등록 안함
-		Location locationInfo = locationMapper.findByLocationName(locationName);
-		locationIsEmpty(locationInfo);
-		Board boardInfo = boardSaveDto.toEntity(userId, locationInfo);
-		// 유저의 동네와 저장하려는 동네가 일치하면 저장, 그렇지 않으면 저장 X
-		if (userLocationName.equals(boardInfo.getLocationName())) {
-			int saveResult = boardMapper.save(boardInfo);
-			if (saveResult != 1) {
-				throw new BoardSaveFailedException();
-			}
-		} else {
-			String boardLocationName = boardInfo.getLocationName();
-			throw new TownNotMatchException(boardLocationName);
-		}
-		//  boardInfo.getId() 받아와서 image 저장
-		return boardInfo;
-	}
-
-	public static void boardIsEmpty(Object boards) {
-		if (ObjectUtils.isEmpty(boards)) {
-			throw new BoardNotFoundException();
+		Board boardInfo = boardSaveDto.toEntity(userId, userInfo);
+		int result = boardMapper.save(boardInfo);
+		if (isNotApplication(result)) {
+			throw new BoardSaveFailedException();
 		}
 	}
 
@@ -165,5 +141,9 @@ public class BoardService {
 		if (deleteCount < 1) {
 			throw new BoardDeleteFailedException();
 		}
+	}
+
+	public boolean isNotApplication(int result) {
+		return result < 1;
 	}
 }
