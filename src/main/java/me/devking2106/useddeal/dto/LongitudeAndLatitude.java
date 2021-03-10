@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Geographic {
+public class LongitudeAndLatitude {
 	private Double latitude;
 	private Double longitude;
 }

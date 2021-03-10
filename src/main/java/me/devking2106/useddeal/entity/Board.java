@@ -6,8 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import me.devking2106.useddeal.dto.DateInfo;
-import me.devking2106.useddeal.dto.Geographic;
+import me.devking2106.useddeal.dto.BoardDate;
+import me.devking2106.useddeal.dto.LongitudeAndLatitude;
 
 @Getter
 @Builder
@@ -34,10 +34,7 @@ public class Board {
 	private Long categoryId;
 	private Board.Status status;
 	private boolean isPull;
-	private DateInfo dateInfo;
-	private Geographic geographic;
+	private BoardDate boardDate;
+	private LongitudeAndLatitude longitudeAndLatitude;
 
-	public boolean isMatchLocationName(User user) {
-		return this.locationName.equals(user.getLocationName());
-	}
 }

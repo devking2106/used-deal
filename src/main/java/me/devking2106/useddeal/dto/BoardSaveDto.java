@@ -34,7 +34,7 @@ public class BoardSaveDto {
 
 	public Board toEntity(Long userId, User user) {
 		LocalDateTime saveTime = LocalDateTime.now();
-		DateInfo dateInfo = DateInfo.builder()
+		BoardDate boardDate = BoardDate.builder()
 			.regDate(saveTime)
 			.modDate(saveTime)
 			.boardDate(saveTime)
@@ -49,8 +49,8 @@ public class BoardSaveDto {
 			.categoryId(categoryId)
 			.status(Board.Status.SALE)
 			.isPull(false)
-			.dateInfo(dateInfo)
-			.geographic(user.getLongitudeAndLatitude())
+			.boardDate(boardDate)
+			.longitudeAndLatitude(user.getLongitudeAndLatitude())
 			.build();
 	}
 }

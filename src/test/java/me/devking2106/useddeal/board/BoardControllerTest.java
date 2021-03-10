@@ -22,15 +22,14 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import me.devking2106.useddeal.dto.BoardModifyDto;
 import me.devking2106.useddeal.dto.BoardSaveDto;
-import me.devking2106.useddeal.dto.DateInfo;
-import me.devking2106.useddeal.dto.Geographic;
+import me.devking2106.useddeal.dto.BoardDate;
+import me.devking2106.useddeal.dto.LongitudeAndLatitude;
 import me.devking2106.useddeal.entity.Board;
 import me.devking2106.useddeal.error.exception.board.BoardNotFoundException;
 import me.devking2106.useddeal.error.exception.board.BoardTimeStampException;
@@ -48,12 +47,12 @@ class BoardControllerTest {
 	@BeforeEach
 	void initBoard() {
 		final LocalDateTime saveTime = LocalDateTime.now();
-		DateInfo dateInfo = DateInfo.builder()
+		BoardDate boardDate = BoardDate.builder()
 			.boardDate(saveTime)
 			.regDate(saveTime)
 			.modDate(saveTime)
 			.build();
-		Geographic geographic = Geographic.builder()
+		LongitudeAndLatitude longitudeAndLatitude = LongitudeAndLatitude.builder()
 			.latitude(37.587111)
 			.longitude(126.969069)
 			.build();
@@ -67,9 +66,9 @@ class BoardControllerTest {
 			.price(1_000_000L)
 			.categoryId(1L)
 			.status(Board.Status.SALE)
-			.dateInfo(dateInfo)
+			.boardDate(boardDate)
 			.isPull(true)
-			.geographic(geographic)
+			.longitudeAndLatitude(longitudeAndLatitude)
 			.build();
 	}
 

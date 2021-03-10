@@ -1,6 +1,6 @@
 package me.devking2106.useddeal.service;
 
-import static me.devking2106.useddeal.common.utils.CustomUtil.*;
+import static me.devking2106.useddeal.service.LocationService.*;
 import static me.devking2106.useddeal.service.UserService.*;
 
 import java.time.Duration;
@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,7 @@ import me.devking2106.useddeal.entity.Board;
 import me.devking2106.useddeal.entity.Location;
 import me.devking2106.useddeal.entity.User;
 import me.devking2106.useddeal.error.exception.board.BoardDeleteFailedException;
+import me.devking2106.useddeal.error.exception.board.BoardNotFoundException;
 import me.devking2106.useddeal.error.exception.board.BoardNotMatchUserIdException;
 import me.devking2106.useddeal.error.exception.board.BoardPullFailedException;
 import me.devking2106.useddeal.error.exception.board.BoardSaveFailedException;
@@ -40,14 +42,17 @@ public class BoardService {
 	private final LocationMapper locationMapper;
 	private final UserMapper userMapper;
 
-	public void register(BoardSaveDto boardSaveDto, Long userId) {
+	public Board register(BoardSaveDto boardSaveDto, Long userId) {
 		User userInfo = userMapper.findById(userId);
 		userIsEmpty(userInfo);
 		Board boardInfo = boardSaveDto.toEntity(userId, userInfo);
 		int result = boardMapper.save(boardInfo);
+		String boardTitle = boardInfo.getTitle();
 		if (isNotApplication(result)) {
-			throw new BoardSaveFailedException();
+			log.info("게시글 등록 실패 : user id = {}", userId);
+			throw new BoardSaveFailedException(userId, boardTitle);
 		}
+		return boardInfo;
 	}
 
 	@Transactional(readOnly = true)
@@ -145,5 +150,11 @@ public class BoardService {
 
 	public boolean isNotApplication(int result) {
 		return result < 1;
+	}
+
+	public static void boardIsEmpty(BoardDetailDto board) {
+		if (ObjectUtils.isEmpty(board)) {
+			throw new BoardNotFoundException();
+		}
 	}
 }

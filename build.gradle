@@ -68,7 +68,6 @@ dependencies {
     }
     compile 'org.springframework.boot:spring-boot-starter-log4j2'   // log4j2
     compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.10.3'   // log4j2
-    compile 'org.springframework.boot:spring-boot-starter-actuator' // Controller의 @RequestMapping 기반으로 http 테스트
 }
 
 test {

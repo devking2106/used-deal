@@ -29,12 +29,12 @@
             PRICE = #{price},
             CATEGORY_ID = #{categoryId},
             STATUS = #{status},
-            REG_DATE = #{dateInfo.regDate},
-            MOD_DATE = #{dateInfo.modDate},
-            BOARD_DATE = #{dateInfo.boardDate},
+            REG_DATE = #{boardDate.regDate},
+            MOD_DATE = #{boardDate.modDate},
+            BOARD_DATE = #{boardDate.boardDate},
             IS_PULL = #{isPull},
-            LATITUDE = #{geographic.latitude},
-            LONGITUDE = #{geographic.longitude}
+            LATITUDE = #{longitudeAndLatitude.latitude},
+            LONGITUDE = #{longitudeAndLatitude.longitude}
     </insert>
 
     <select id="findById" resultMap="BoardDetailDto">

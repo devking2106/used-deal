@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor
-public class DateInfo {
+public class BoardDate {
 	private LocalDateTime regDate;
 	private LocalDateTime modDate;
 	private LocalDateTime boardDate;
