@@ -21,9 +21,9 @@ public enum ExceptionStatus {
 	BOARD_NOT_FOUND_EXCEPTION(4101, "게시글이 존재하지 않습니다.", NOT_FOUND),
 	BOARD_SAVE_FAILED_EXCEPTION(4102, "게시글 저장을 실패했습니다.", BAD_REQUEST),
 	BOARD_STATUS_HIDE_EXCEPTION(4103, "게시글이 숨김 상태거나 본인이 작성한 글이 아닙니다.", BAD_REQUEST),
-	BOARD_PULL_FAILED_EXCEPTION(4104, "끌어 올리기를 실패 했습니다. 게시글이 없거나 혹은 본인이 작성한 글이 아니거나 게시글 작성 경과일이 2일이 지나지 않았습니다.",
-		BAD_REQUEST),
-	BOARD_TIMESTAMP_EXCEPTION(4105, "경과 시간이 2일이 지나지 않았습니다.", BAD_REQUEST),
+	BOARD_PULL_FAILED_EXCEPTION(4104, "끌어 올리기를 실패 했습니다.", BAD_REQUEST),
+
+	BOARD_DATE_LESS_THAN_TWO_DAYS_EXCEPTION(4105, "게시글 게시일이 2일이 지나지 않았습니다.", BAD_REQUEST),
 	BOARD_NOT_MATCH_USERID_EXCEPTION(4106, "게시글 작성자가 일치하지 않습니다.", BAD_REQUEST),
 	BOARD_STATUS_FAILED_EXCEPTION(4107, "게시글 상태 변경을 실패했습니다.", BAD_REQUEST),
 	BOARD_UPDATE_FAILED_EXCEPTION(4108, "게시글 수정을 실패했습니다", BAD_REQUEST),

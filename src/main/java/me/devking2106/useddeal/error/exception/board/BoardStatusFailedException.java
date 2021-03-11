@@ -8,6 +8,5 @@ public class BoardStatusFailedException extends UsedDealException {
 
 	public BoardStatusFailedException(Board.Status message) {
 		super(ExceptionStatus.BOARD_STATUS_FAILED_EXCEPTION, message + " 상태 변경을 실패 했습니다");
-
 	}
 }

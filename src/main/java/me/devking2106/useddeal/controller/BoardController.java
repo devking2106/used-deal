@@ -60,7 +60,7 @@ public class BoardController {
 
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@PatchMapping("/boards/{id}/status")
-	public void updateStatue(@PathVariable Long id, @RequestBody Board.Status status,
+	public void updateStatus(@PathVariable Long id, @RequestBody Board.Status status,
 		@SessionAttribute("ID") Long userId) {
 		boardService.updateStatus(id, status, userId);
 	}

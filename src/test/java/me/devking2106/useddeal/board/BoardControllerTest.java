@@ -22,7 +22,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,42 +30,17 @@ import me.devking2106.useddeal.dto.BoardModifyDto;
 import me.devking2106.useddeal.dto.BoardSaveDto;
 import me.devking2106.useddeal.entity.Board;
 import me.devking2106.useddeal.error.exception.board.BoardNotFoundException;
-import me.devking2106.useddeal.error.exception.board.BoardTimeStampException;
+import me.devking2106.useddeal.error.exception.board.BoardDateLessThanTwoDaysException;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("local")
-class BoardTest {
+class BoardControllerTest {
 
 	@Autowired
 	MockMvc mockMvc;
 	@Autowired
 	ObjectMapper objectMapper;
-
-	private Board board;
-
-	final LocalDateTime saveTime = LocalDateTime.now();
-
-	@BeforeEach
-	void initBoard() {
-		board = Board.builder()
-			.id(1L)
-			.userId(1L)
-			.locationId(1111010100L)
-			.locationName("서울 종로구 청운동")
-			.title("title Test User1")
-			.content("content Test User1")
-			.price(1_000_000L)
-			.categoryId(1L)
-			.status(Board.Status.SALE)
-			.regDate(saveTime)
-			.modDate(saveTime)
-			.boardDate(saveTime)
-			.isPull(true)
-			.latitude(37.587111)
-			.longitude(126.969069)
-			.build();
-	}
 
 	@Test
 	@DisplayName("게시글 생성 테스트 - 유저의 위치와 게시글 작성 동네가 같을때 - 성공")
@@ -430,7 +404,7 @@ class BoardTest {
 			.andExpect(status().isBadRequest())
 			.andExpect(
 				result -> assertTrue(Objects.requireNonNull(result.getResolvedException()).getClass().isAssignableFrom(
-					BoardTimeStampException.class)));
+					BoardDateLessThanTwoDaysException.class)));
 	}
 
 	@Order(50)

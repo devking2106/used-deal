@@ -18,7 +18,6 @@ import me.devking2106.useddeal.dto.BoardDetailDto;
 import me.devking2106.useddeal.dto.BoardFindDto;
 import me.devking2106.useddeal.dto.BoardModifyDto;
 import me.devking2106.useddeal.dto.BoardSaveDto;
-import me.devking2106.useddeal.dto.LongitudeAndLatitude;
 import me.devking2106.useddeal.entity.Board;
 import me.devking2106.useddeal.entity.Location;
 import me.devking2106.useddeal.entity.User;
@@ -29,7 +28,7 @@ import me.devking2106.useddeal.error.exception.board.BoardPullFailedException;
 import me.devking2106.useddeal.error.exception.board.BoardSaveFailedException;
 import me.devking2106.useddeal.error.exception.board.BoardStatusFailedException;
 import me.devking2106.useddeal.error.exception.board.BoardStatusHideException;
-import me.devking2106.useddeal.error.exception.board.BoardTimeStampException;
+import me.devking2106.useddeal.error.exception.board.BoardDateLessThanTwoDaysException;
 import me.devking2106.useddeal.error.exception.board.BoardUpdateFailedException;
 import me.devking2106.useddeal.error.exception.location.TownNotMatchException;
 import me.devking2106.useddeal.repository.mapper.BoardMapper;
@@ -68,8 +67,9 @@ public class BoardService {
 		return boardInfo;
 	}
 
-	public static void boardIsEmpty(Object boards) {
+	public static void boardIsEmpty(Object boards, Long userId, Long boardId) {
 		if (ObjectUtils.isEmpty(boards)) {
+			log.info("게시글이 없을때 : user id = {}, board id = {}", userId, boardId);
 			throw new BoardNotFoundException();
 		}
 	}
@@ -79,7 +79,7 @@ public class BoardService {
 		// 내 userId 를 가져온다
 		long userId = 1;
 		BoardDetailDto boardInfo = boardMapper.findById(boardId);
-		boardIsEmpty(boardInfo);
+		boardIsEmpty(boardInfo, userId, boardId);
 		// 글이 숨김이고 내가 작성한 글이 아닐 경우 보지 못한다
 		if (boardInfo.isBoardNotHideAndMyBoard(userId)) {
 			throw new BoardStatusHideException();
@@ -104,24 +104,28 @@ public class BoardService {
 		return boardMapper.findAll(boardFindRequest, latitude, longitude);
 	}
 
-	public void updatePull(Long id, Board.Status status, Long userId,
+	public void updatePull(Long boardId, Board.Status status, Long userId,
 		BoardDetailDto boardDetailDto, LocalDateTime updateTime) {
 		LocalDateTime boardDate = boardDetailDto.getBoardDate();
 		long boardDateSeconds = Duration.between(boardDate, updateTime).getSeconds();
 		long twoDaysSeconds = Duration.ofDays(2).getSeconds();
-		if (boardDateSeconds < twoDaysSeconds) {
-			throw new BoardTimeStampException(String.valueOf(boardDateSeconds));
+		if (isLessThanTwoDays(boardDateSeconds, twoDaysSeconds)) {
+			log.info("게시글 게시일이 2일 이내 일때 : user id = {} , board id = {}", userId, boardId);
+			throw new BoardDateLessThanTwoDaysException(String.valueOf(boardDateSeconds));
 		}
-		int updateCount = boardMapper.updateStatus(id, userId, status, updateTime);
-		if (updateCount < 1) {
+		int result = boardMapper.updateStatus(boardId, userId, status, updateTime);
+		if (isNotApplication(result)) {
+			log.info("게시글 끌어올리기 실패 : user id = {} , board id = {}", userId, boardId);
 			throw new BoardPullFailedException();
 		}
 	}
 
-	public void updateStatus(Long id, Board.Status status, Long userId) {
-		BoardDetailDto boardDetailDto = boardMapper.findById(id);
-		boardIsEmpty(boardDetailDto);
-		if (!userId.equals(boardDetailDto.getUserId())) {
+	public void updateStatus(Long boardId, Board.Status status, Long userId) {
+		BoardDetailDto boardDetailDto = boardMapper.findById(boardId);
+		boardIsEmpty(boardDetailDto, userId, boardId);
+		if (boardDetailDto.isOwnerTo(userId)) {
+			log.info("게시글 작성자가 일치하지 않을 때 : user id = {}, board user id = {}, board id = {}", userId,
+				boardDetailDto.getUserId(), boardId);
 			throw new BoardNotMatchUserIdException();
 		}
 		if (!boardDetailDto.isStatusUpdatable(status)) {
@@ -129,28 +133,32 @@ public class BoardService {
 		}
 		LocalDateTime updateTime = LocalDateTime.now();
 		if (status == Board.Status.PULL) {
-			updatePull(id, status, userId, boardDetailDto, updateTime);
+			updatePull(boardId, status, userId, boardDetailDto, updateTime);
 		} else {
-			updateStatus(id, status, userId, updateTime);
+			updateStatus(boardId, status, userId, updateTime);
 		}
 	}
 
-	private void updateStatus(Long id, Board.Status status, long userId, LocalDateTime updateTime) {
-		int updateCount = boardMapper.updateStatus(id, userId, status, updateTime);
-		if (updateCount < 1) {
+	private void updateStatus(Long boardId, Board.Status status, Long userId, LocalDateTime updateTime) {
+		int result = boardMapper.updateStatus(boardId, userId, status, updateTime);
+		if (isNotApplication(result)) {
+			log.info("게시글 상태 변경 실패 : user id = {} , board id = {}", userId, boardId);
 			throw new BoardStatusFailedException(status);
 		}
 	}
 
-	public void updateBoard(Long id, BoardModifyDto boardModifyDto, Long userId) {
-		BoardDetailDto boardDetailDto = boardMapper.findById(id);
-		boardIsEmpty(boardDetailDto);
-		if (!userId.equals(boardDetailDto.getUserId())) {
+	public void updateBoard(Long boardId, BoardModifyDto boardModifyDto, Long userId) {
+		BoardDetailDto boardDetailDto = boardMapper.findById(boardId);
+		boardIsEmpty(boardDetailDto, userId, boardId);
+		if (boardDetailDto.isOwnerTo(userId)) {
+			log.info("게시글 작성자가 일치하지 않을 때 : user id = {}, board user id = {}, board id = {}", userId,
+				boardDetailDto.getUserId(), boardId);
 			throw new BoardNotMatchUserIdException();
 		}
 		LocalDateTime updateTime = LocalDateTime.now();
-		int updateCount = boardMapper.updateBoard(id, boardModifyDto, updateTime);
-		if (updateCount < 1) {
+		int result = boardMapper.updateBoard(boardId, boardModifyDto, updateTime);
+		if (isNotApplication(result)) {
+			log.info("게시글 수정 실패 : user id = {} , board id = {}", userId, boardId);
 			throw new BoardUpdateFailedException();
 		}
 	}
@@ -165,5 +173,13 @@ public class BoardService {
 		if (deleteCount < 1) {
 			throw new BoardDeleteFailedException();
 		}
+	}
+
+	private boolean isNotApplication(int result) {
+		return result < 1;
+	}
+
+	private boolean isLessThanTwoDays(long boardDateSeconds, long twoDaysSeconds) {
+		return boardDateSeconds < twoDaysSeconds;
 	}
 }

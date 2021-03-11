@@ -35,4 +35,9 @@ public class BoardDetailDto {
 	public boolean isBoardNotHideAndMyBoard(long userId) {
 		return this.userId != userId && this.status == Board.Status.HIDE;
 	}
+
+	public boolean isOwnerTo(long userId) {
+		return this.userId != userId;
+	}
+
 }
