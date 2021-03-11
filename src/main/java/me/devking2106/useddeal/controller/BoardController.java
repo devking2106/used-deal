@@ -41,15 +41,22 @@ public class BoardController {
 	}
 
 	@ResponseStatus(HttpStatus.OK)
+	@GetMapping("/boards/region-auth/{locationName}")
+	public boolean boardAuth(@PathVariable String locationName, @SessionAttribute("ID") Long userId) {
+		return boardService.boardAuth(locationName, userId);
+	}
+
+	@ResponseStatus(HttpStatus.OK)
 	@GetMapping("/boards/{id}")
-	public BoardDetailDto findById(@PathVariable Long id) {
-		return boardService.findById(id);
+	public BoardDetailDto findById(@PathVariable Long id, @SessionAttribute("ID") Long userId) {
+		return boardService.findById(id, userId);
 	}
 
 	@ResponseStatus(HttpStatus.OK)
 	@GetMapping("/boards")
-	public List<BoardFindDto> findAll(@Valid BoardFindRequest boardFindRequest, @SessionAttribute(value = "ID") Long userId) {
-		return boardService.findAll(boardFindRequest);
+	public List<BoardFindDto> findByLocationName(@Valid BoardFindRequest boardFindRequest,
+		@SessionAttribute(value = "ID") Long userId) {
+		return boardService.findByLocationName(boardFindRequest);
 	}
 
 	@ResponseStatus(HttpStatus.OK)

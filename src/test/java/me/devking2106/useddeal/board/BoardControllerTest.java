@@ -36,37 +36,12 @@ import me.devking2106.useddeal.error.exception.board.BoardTimeStampException;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("local")
-class BoardTest {
+class BoardControllerTest {
 
 	@Autowired
 	MockMvc mockMvc;
 	@Autowired
 	ObjectMapper objectMapper;
-
-	private Board board;
-
-	final LocalDateTime saveTime = LocalDateTime.now();
-
-	@BeforeEach
-	void initBoard() {
-		board = Board.builder()
-			.id(1L)
-			.userId(1L)
-			.locationId(1111010100L)
-			.locationName("서울 종로구 청운동")
-			.title("title Test User1")
-			.content("content Test User1")
-			.price(1_000_000L)
-			.categoryId(1L)
-			.status(Board.Status.SALE)
-			.regDate(saveTime)
-			.modDate(saveTime)
-			.boardDate(saveTime)
-			.isPull(true)
-			.latitude(37.587111)
-			.longitude(126.969069)
-			.build();
-	}
 
 	@Test
 	@DisplayName("게시글 생성 테스트 - 유저의 위치와 게시글 작성 동네가 같을때 - 성공")
@@ -280,7 +255,7 @@ class BoardTest {
 	}
 
 	@Test
-	@DisplayName("게시글 전체 조회 테스트 - 제목 공백 입력 - findAll 로 조회- 성공")
+	@DisplayName("게시글 전체 조회 테스트 - 제목 공백 입력 - 성공")
 	void findSuccessBoardByNoTitleAndNoContentAll() throws Exception {
 		mockMvc.perform(get("/api/boards")
 			.sessionAttr("ID", 1L)
@@ -293,7 +268,8 @@ class BoardTest {
 	@Test
 	@DisplayName("게시글 번호 조회 테스트 - 성공")
 	void findSuccessByBoardId() throws Exception {
-		mockMvc.perform(get("/api/boards/{id}", 1))
+		mockMvc.perform(get("/api/boards/{id}", 1)
+			.sessionAttr("ID", 1L))
 			.andDo(print())
 			.andExpect(status().isOk());
 	}
@@ -301,7 +277,8 @@ class BoardTest {
 	@Test
 	@DisplayName("게시글 번호 조회 테스트 - 데이터가 없을때 - 실패")
 	void findFailureFindByBoardId() throws Exception {
-		mockMvc.perform(get("/api/boards/{id}", 200))
+		mockMvc.perform(get("/api/boards/{id}", 200)
+			.sessionAttr("ID", 1L))
 			.andDo(print())
 			.andExpect(status().isNotFound())
 			.andExpect(
@@ -312,7 +289,8 @@ class BoardTest {
 	@Test
 	@DisplayName("게시글 번호 조회 테스트 - 1보다 작은 값 입력 - 실패")
 	void findFailureByBoardIdNotBoundsNumber() throws Exception {
-		mockMvc.perform(get("/api/boards/{id}", -1))
+		mockMvc.perform(get("/api/boards/{id}", -1)
+			.sessionAttr("ID", 1L))
 			.andDo(print())
 			.andExpect(status().isNotFound())
 			.andExpect(
@@ -323,7 +301,8 @@ class BoardTest {
 	@Test
 	@DisplayName("게시글 번호 조회 테스트 - 숫자가 아닌 값 입력 - 실패")
 	void findFailureByBoardIdNumber() throws Exception {
-		mockMvc.perform(get("/api/boards/{id}", "a"))
+		mockMvc.perform(get("/api/boards/{id}", "a")
+			.sessionAttr("ID", 1L))
 			.andDo(print())
 			.andExpect(status().isBadRequest())
 			.andExpect(
@@ -341,11 +320,6 @@ class BoardTest {
 			.andExpect(status().isOk());
 	}
 
-	/**
-	 * 게시글 지역이름으로 조회 - 지역 입력 - 없는 지역 - 실패
-	 * 경우도 추가
-	 */
-
 	@Test
 	@DisplayName("게시글 지역이름으로 조회 - 지역, 범위 입력 - 성공")
 	void findSuccessByLocationNameAndRange() throws Exception {
@@ -358,13 +332,12 @@ class BoardTest {
 	}
 
 	@Test
-	@DisplayName("게시글 지역이름으로 조회 - 지역, 범위 미입력 - 성공")
+	@DisplayName("게시글 지역이름으로 조회 - 지역, 범위 미입력 - 실패")
 	void findFailureByLocationNameAndRange() throws Exception {
 		mockMvc.perform(get("/api/boards")
 			.sessionAttr("ID", 1L))
 			.andDo(print())
-			.andExpect(status().isOk())
-			;
+			.andExpect(status().isBadRequest());
 	}
 
 	@Test

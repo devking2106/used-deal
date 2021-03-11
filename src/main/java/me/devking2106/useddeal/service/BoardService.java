@@ -75,12 +75,9 @@ public class BoardService {
 	}
 
 	@Transactional(readOnly = true)
-	public BoardDetailDto findById(Long boardId) {
-		// 내 userId 를 가져온다
-		long userId = 1;
+	public BoardDetailDto findById(Long boardId, Long userId) {
 		BoardDetailDto boardInfo = boardMapper.findById(boardId);
 		boardIsEmpty(boardInfo);
-		// 글이 숨김이고 내가 작성한 글이 아닐 경우 보지 못한다
 		if (boardInfo.isBoardNotHideAndMyBoard(userId)) {
 			throw new BoardStatusHideException();
 		}
@@ -95,13 +92,25 @@ public class BoardService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<BoardFindDto> findAll(BoardFindRequest boardFindRequest) {
+	public List<BoardFindDto> findByLocationName(BoardFindRequest boardFindRequest) {
 		String locationName = boardFindRequest.getLocation();
 		Location locationInfo = locationMapper.findByLocationName(locationName);
 		locationIsEmpty(locationInfo);
-		double latitude = locationInfo.getLatitude();
-		double longitude = locationInfo.getLongitude();
-		return boardMapper.findAll(boardFindRequest, latitude, longitude);
+		LongitudeAndLatitude longitudeAndLatitude = LongitudeAndLatitude.builder()
+			.latitude(locationInfo.getLatitude())
+			.longitude(locationInfo.getLongitude())
+			.build();
+		return boardMapper.findByLocationName(boardFindRequest, longitudeAndLatitude);
+	}
+
+	@Transactional(readOnly = true)
+	public boolean boardAuth(String locationName, Long userId) {
+		Location locationInfo = locationMapper.findByLocationName(locationName);
+		locationIsEmpty(locationInfo);
+		User userInfo = userMapper.findById(userId);
+		userIsEmpty(userInfo);
+		String userInfoLocationName = userInfo.getLocationName();
+		return locationName.equals(userInfoLocationName);
 	}
 
 	public void updatePull(Long id, Board.Status status, Long userId,

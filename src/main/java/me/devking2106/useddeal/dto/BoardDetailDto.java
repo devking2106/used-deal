@@ -2,6 +2,7 @@ package me.devking2106.useddeal.dto;
 
 import java.time.LocalDateTime;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,8 +13,8 @@ import me.devking2106.useddeal.entity.Board;
 @Getter
 @Builder
 @ToString
-@AllArgsConstructor
-@NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BoardDetailDto {
 
 	private Long id;

@@ -4,6 +4,7 @@ import javax.validation.constraints.NotBlank;
 
 import org.hibernate.validator.constraints.Range;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,8 +16,8 @@ import me.devking2106.useddeal.entity.Board;
 @Setter
 @Builder
 @ToString
-@AllArgsConstructor
-@NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BoardFindRequest {
 
 	private Board.FilterType filterType;

@@ -4,7 +4,7 @@
 <mapper namespace="me.devking2106.useddeal.repository.mapper.BoardMapper">
 
     <resultMap id="BoardDetailDto" type="me.devking2106.useddeal.dto.BoardDetailDto">
-        <result property="id" column="id"/>
+        <id property="id" column="id"/>
         <result property="userId" column="user_id"/>
         <result property="nickname" column="nickname"/>
         <result property="title" column="title"/>
@@ -27,9 +27,9 @@
             PRICE = #{price},
             CATEGORY_ID = #{categoryId},
             STATUS = #{status},
-            REG_DATE = #{regDate},
-            MOD_DATE = #{modDate},
-            BOARD_DATE = #{boardDate},
+            REG_DATE = #{board.regDate},
+            MOD_DATE = #{board.modDate},
+            BOARD_DATE = #{board.boardDate},
             IS_PULL = #{isPull},
             LATITUDE = #{latitude},
             LONGITUDE = #{longitude}
@@ -70,7 +70,7 @@
         ORDER BY BOARD_DATE
     </select>
 
-    <select id="findAll" resultType="me.devking2106.useddeal.dto.BoardFindDto">
+    <select id="findByLocationName" resultType="me.devking2106.useddeal.dto.BoardFindDto">
         SELECT ID,
         TITLE,
         LOCATION_NAME,
@@ -85,7 +85,7 @@
         </if>
         <if test="boardFindRequest.range != 0">
             FROM (SELECT *,
-            (6371*acos(cos(radians(#{latitude}))*cos(radians(LATITUDE))*cos(radians(LONGITUDE)-radians(#{longitude}))+sin(radians(#{latitude}))*sin(radians(LATITUDE))))
+            (6371*acos(cos(radians(#{longitudeAndLatitude.latitude}))*cos(radians(LATITUDE))*cos(radians(LONGITUDE)-radians(#{longitudeAndLatitude.longitude}))+sin(radians(#{longitudeAndLatitude.latitude}))*sin(radians(LATITUDE))))
             AS distance
             FROM BOARD) BOARD
             WHERE DISTANCE <![CDATA[<=]]> #{boardFindRequest.range}
