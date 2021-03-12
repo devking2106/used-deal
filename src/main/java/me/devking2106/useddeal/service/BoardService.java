@@ -110,7 +110,6 @@ public class BoardService {
 		long boardDateSeconds = Duration.between(boardDate, updateTime).getSeconds();
 		long twoDaysSeconds = Duration.ofDays(2).getSeconds();
 		if (isLessThanTwoDays(boardDateSeconds, twoDaysSeconds)) {
-			log.info("게시글 게시일이 2일 이내 일때 : user id = {} , board id = {}", userId, boardId);
 			throw new BoardDateLessThanTwoDaysException(String.valueOf(boardDateSeconds));
 		}
 		int result = boardMapper.updateStatus(boardId, userId, status, updateTime);
@@ -124,8 +123,6 @@ public class BoardService {
 		BoardDetailDto boardDetailDto = boardMapper.findById(boardId);
 		boardIsEmpty(boardDetailDto, userId, boardId);
 		if (boardDetailDto.isOwnerTo(userId)) {
-			log.info("게시글 작성자가 일치하지 않을 때 : user id = {}, board user id = {}, board id = {}", userId,
-				boardDetailDto.getUserId(), boardId);
 			throw new BoardNotMatchUserIdException();
 		}
 		if (!boardDetailDto.isStatusUpdatable(status)) {
@@ -151,8 +148,6 @@ public class BoardService {
 		BoardDetailDto boardDetailDto = boardMapper.findById(boardId);
 		boardIsEmpty(boardDetailDto, userId, boardId);
 		if (boardDetailDto.isOwnerTo(userId)) {
-			log.info("게시글 작성자가 일치하지 않을 때 : user id = {}, board user id = {}, board id = {}", userId,
-				boardDetailDto.getUserId(), boardId);
 			throw new BoardNotMatchUserIdException();
 		}
 		LocalDateTime updateTime = LocalDateTime.now();
