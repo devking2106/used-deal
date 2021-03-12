@@ -67,9 +67,8 @@ public class BoardService {
 		return boardInfo;
 	}
 
-	public static void boardIsEmpty(BoardDetailDto board, Long userId, Long boardId) {
+	public static void boardIsEmpty(BoardDetailDto board) {
 		if (ObjectUtils.isEmpty(board)) {
-			log.info("게시글이 없을때 : user id = {}, board id = {}", userId, boardId);
 			throw new BoardNotFoundException();
 		}
 	}
@@ -121,7 +120,7 @@ public class BoardService {
 
 	public void updateStatus(Long boardId, Board.Status status, Long userId) {
 		BoardDetailDto boardDetailDto = boardMapper.findById(boardId);
-		boardIsEmpty(boardDetailDto, userId, boardId);
+		boardIsEmpty(boardDetailDto);
 		if (boardDetailDto.isOwnerTo(userId)) {
 			throw new BoardNotMatchUserIdException();
 		}
@@ -146,7 +145,7 @@ public class BoardService {
 
 	public void updateBoard(Long boardId, BoardModifyDto boardModifyDto, Long userId) {
 		BoardDetailDto boardDetailDto = boardMapper.findById(boardId);
-		boardIsEmpty(boardDetailDto, userId, boardId);
+		boardIsEmpty(boardDetailDto);
 		if (boardDetailDto.isOwnerTo(userId)) {
 			throw new BoardNotMatchUserIdException();
 		}
