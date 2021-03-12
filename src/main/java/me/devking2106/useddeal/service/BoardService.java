@@ -68,20 +68,20 @@ public class BoardService {
 		return boardInfo;
 	}
 
-	public static void boardIsEmpty(Object boards) {
-		if (ObjectUtils.isEmpty(boards)) {
+	public static void boardIsEmpty(BoardDetailDto board) {
+		if (ObjectUtils.isEmpty(board)) {
 			throw new BoardNotFoundException();
 		}
 	}
 
 	@Transactional(readOnly = true)
 	public BoardDetailDto findById(Long boardId, Long userId) {
-		BoardDetailDto boardInfo = boardMapper.findById(boardId);
-		boardIsEmpty(boardInfo);
-		if (boardInfo.isBoardNotHideAndMyBoard(userId)) {
+		BoardDetailDto boardDetailDto = boardMapper.findById(boardId);
+		boardIsEmpty(boardDetailDto);
+		if (boardDetailDto.isBoardNotHideAndMyBoard(userId)) {
 			throw new BoardStatusHideException();
 		}
-		return boardInfo;
+		return boardDetailDto;
 	}
 
 	@Transactional(readOnly = true)
