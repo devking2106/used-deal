@@ -155,15 +155,20 @@ public class BoardService {
 		}
 	}
 
-	public void deleteById(Long id, Long userId) {
-		BoardDetailDto boardDetailDto = boardMapper.findById(id);
+	public void deleteById(Long boardId, Long userId) {
+		BoardDetailDto boardDetailDto = boardMapper.findById(boardId);
 		boardIsEmpty(boardDetailDto);
-		if (!userId.equals(boardDetailDto.getUserId())) {
+		if (!boardDetailDto.isOwnerTo(userId)) {
 			throw new BoardNotMatchUserIdException();
 		}
-		int deleteCount = boardMapper.deleteById(id);
-		if (deleteCount < 1) {
+		int result = boardMapper.deleteById(boardId);
+		if (isNotApplication(result)) {
+			log.info("게시글 삭제 실패 : user id = {} , board id = {}", userId, boardId);
 			throw new BoardDeleteFailedException();
 		}
+	}
+
+	private boolean isNotApplication(int result) {
+		return result < 1;
 	}
 }
