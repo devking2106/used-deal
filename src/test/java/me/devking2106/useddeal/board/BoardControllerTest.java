@@ -29,7 +29,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import me.devking2106.useddeal.dto.BoardModifyDto;
 import me.devking2106.useddeal.dto.BoardSaveDto;
 import me.devking2106.useddeal.dto.BoardDate;
-import me.devking2106.useddeal.dto.LongitudeAndLatitude;
+import me.devking2106.useddeal.dto.Position;
 import me.devking2106.useddeal.entity.Board;
 import me.devking2106.useddeal.error.exception.board.BoardNotFoundException;
 import me.devking2106.useddeal.error.exception.board.BoardTimeStampException;
@@ -52,7 +52,7 @@ class BoardControllerTest {
 			.regDate(saveTime)
 			.modDate(saveTime)
 			.build();
-		LongitudeAndLatitude longitudeAndLatitude = LongitudeAndLatitude.builder()
+		Position position = Position.builder()
 			.latitude(37.587111)
 			.longitude(126.969069)
 			.build();
@@ -68,7 +68,7 @@ class BoardControllerTest {
 			.status(Board.Status.SALE)
 			.boardDate(boardDate)
 			.isPull(true)
-			.longitudeAndLatitude(longitudeAndLatitude)
+			.position(position)
 			.build();
 	}
 

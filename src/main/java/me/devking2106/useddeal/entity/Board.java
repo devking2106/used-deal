@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import me.devking2106.useddeal.dto.BoardDate;
-import me.devking2106.useddeal.dto.LongitudeAndLatitude;
+import me.devking2106.useddeal.dto.Position;
 
 @Getter
 @Builder
@@ -35,6 +35,6 @@ public class Board {
 	private Board.Status status;
 	private boolean isPull;
 	private BoardDate boardDate;
-	private LongitudeAndLatitude longitudeAndLatitude;
+	private Position position;
 
 }

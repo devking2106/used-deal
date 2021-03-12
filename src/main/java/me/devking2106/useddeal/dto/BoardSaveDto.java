@@ -50,7 +50,7 @@ public class BoardSaveDto {
 			.status(Board.Status.SALE)
 			.isPull(false)
 			.boardDate(boardDate)
-			.longitudeAndLatitude(user.getLongitudeAndLatitude())
+			.position(user.getPosition())
 			.build();
 	}
 }

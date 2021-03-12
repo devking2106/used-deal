@@ -13,7 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import me.devking2106.useddeal.dto.BoardDate;
-import me.devking2106.useddeal.dto.LongitudeAndLatitude;
+import me.devking2106.useddeal.dto.Position;
 import me.devking2106.useddeal.entity.Board;
 import me.devking2106.useddeal.repository.mapper.BoardMapper;
 
@@ -34,7 +34,7 @@ class BoardServiceTest {
 			.modDate(saveTime)
 			.boardDate(saveTime)
 			.build();
-		LongitudeAndLatitude longitudeAndLatitude = LongitudeAndLatitude.builder()
+		Position position = Position.builder()
 			.latitude(37.587111)
 			.longitude(126.969069)
 			.build();
@@ -49,7 +49,7 @@ class BoardServiceTest {
 			.status(Board.Status.SALE)
 			.boardDate(boardDate)
 			.isPull(false)
-			.longitudeAndLatitude(longitudeAndLatitude)
+			.position(position)
 			.build();
 
 		failedBoard = Board.builder().build();

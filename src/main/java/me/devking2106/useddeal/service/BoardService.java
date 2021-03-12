@@ -47,10 +47,9 @@ public class BoardService {
 		userIsEmpty(userInfo);
 		Board boardInfo = boardSaveDto.toEntity(userId, userInfo);
 		int result = boardMapper.save(boardInfo);
-		String boardTitle = boardInfo.getTitle();
-		if (isNotApplication(result)) {
-			log.info("게시글 등록 실패 : user id = {}", userId);
-			throw new BoardSaveFailedException(userId, boardTitle);
+		if (isNotReflected(result)) {
+			log.info("게시글 등록 실패 : user id = {}, board id = {}", userId, boardInfo.getId());
+			throw new BoardSaveFailedException();
 		}
 		return boardInfo;
 	}
@@ -148,7 +147,7 @@ public class BoardService {
 		}
 	}
 
-	public boolean isNotApplication(int result) {
+	public boolean isNotReflected(int result) {
 		return result < 1;
 	}
 
