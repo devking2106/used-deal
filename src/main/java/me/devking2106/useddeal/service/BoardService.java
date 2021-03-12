@@ -67,8 +67,8 @@ public class BoardService {
 		return boardInfo;
 	}
 
-	public static void boardIsEmpty(Object boards, Long userId, Long boardId) {
-		if (ObjectUtils.isEmpty(boards)) {
+	public static void boardIsEmpty(BoardDetailDto board, Long userId, Long boardId) {
+		if (ObjectUtils.isEmpty(board)) {
 			log.info("게시글이 없을때 : user id = {}, board id = {}", userId, boardId);
 			throw new BoardNotFoundException();
 		}
@@ -79,7 +79,7 @@ public class BoardService {
 		// 내 userId 를 가져온다
 		long userId = 1;
 		BoardDetailDto boardInfo = boardMapper.findById(boardId);
-		boardIsEmpty(boardInfo, userId, boardId);
+		boardIsEmpty(boardInfo);
 		// 글이 숨김이고 내가 작성한 글이 아닐 경우 보지 못한다
 		if (boardInfo.isBoardNotHideAndMyBoard(userId)) {
 			throw new BoardStatusHideException();
